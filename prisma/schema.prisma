@@ -7,13 +7,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        String  @id @default(cuid())
+model Review {
+  id        String      @id @default(cuid())
   title     String
-  content   String?
-  published Boolean @default(false)
-  author    User?@relation(fields:[authorId], references:[id])
-  authorId  String?
+  text      String
+  images    String[]
+  grade     String
+  tags      PieceTag[]
+  piece     Piece       @relation(fields:[pieceId], references:[id])
+  pieceId   String
+  author    User        @relation(fields:[authorId], references:[id])
+  authorId  String
+  comments  ReviewComment[]
+  likes     ReviewLike[]
+}
+
+model Piece {
+  id            String      @id @default(cuid())
+  titleEn       String
+  titleRu       String?
+  descriptionEn String
+  descriptionRu String?
+  ratings       PieceRating[]
+  group         PieceGroup  @relation(fields:[groupId], references:[id])
+  groupId       String
+  author        User        @relation(fields:[authorId], references:[id])
+  authorId      String
+  reviews       Review[]
+}
+
+model PieceGroup {
+  id      String    @id @default(cuid())
+  nameEn  String
+  nameRu  String?
+  pieces  Piece[]
+}
+
+model ReviewComment {
+  id        String  @id @default(cuid())
+  text      String
+  review    Review  @relation(fields:[reviewId], references:[id])
+  reviewId  String
+  author    User    @relation(fields:[authorId], references:[id])
+  authorId  String
+}
+
+model ReviewLike {
+  id        String  @id @default(cuid())
+  review    Review  @relation(fields:[reviewId], references:[id])
+  reviewId  String
+  author    User    @relation(fields:[authorId], references:[id])
+  authorId  String
+  liked     Boolean
+}
+
+model PieceRating {
+  id        String  @id @default(cuid())
+  piece     Piece   @relation(fields:[pieceId], references:[id])
+  pieceId   String
+  author    User    @relation(fields:[authorId], references:[id])
+  authorId  String
+  stars     String
+}
+
+model PieceTag {
+  id        String  @id @default(cuid())
+  name      String
+  author    User    @relation(fields:[authorId], references:[id])
+  authorId  String
+  reviews   Review[]
 }
 
 model Account {
@@ -46,14 +108,25 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?@unique
-  emailVerified DateTime?
-  image         String?
-  posts         Post[]
-  accounts      Account[]
-  sessions      Session[]
+  id                String    @id @default(cuid())
+  name              String?
+  username          String?
+  displayName       String?
+  email             String?   @unique
+  emailVerified     DateTime?
+  image             String?
+  avatar            String?
+  bio               String?
+  registrationDate  DateTime  @default(now())
+  isAdmin           Boolean   @default(false)
+  reviews           Review[]
+  reviewComments    ReviewComment[]
+  reviewLikes       ReviewLike[]
+  pieceRatings      PieceRating[]
+  pieceTagsAdded    PieceTag[]
+  piecesAdded       Piece[]
+  accounts          Account[]
+  sessions          Session[]
 }
 
 model VerificationToken {

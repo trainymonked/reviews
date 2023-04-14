@@ -1,57 +1,38 @@
-import React from "react"
-import { GetStaticProps } from "next"
-import Layout from "../components/Layout"
-import Post, { PostProps } from "../components/Post"
-import prisma from '../lib/prisma'
+import { FC } from 'react'
+import { Box, Button } from '@mui/material'
 
-export const getStaticProps: GetStaticProps = async () => {
-  const feed = await prisma.post.findMany({
-    where: { published: true },
-    include: {
-      author: {
-        select: { name: true },
-      },
-    },
-  })
-  return { 
-    props: { feed }, 
-    revalidate: 10 
-  }
+import Layout from '../components/Layout'
+import Review, { IReview } from '../components/Review'
+import prisma from '../lib/prisma'
+import Link from '../components/Link'
+
+export async function getServerSideProps() {
+    const reviews = await prisma.review.findMany()
+
+    return {
+        props: {
+            reviews,
+        },
+    }
 }
 
 type Props = {
-  feed: PostProps[]
+    reviews: IReview[]
 }
 
-const Blog: React.FC<Props> = (props) => {
-  return (
-    <Layout>
-      <div className="page">
-        <h1>Public Feed</h1>
-        <main>
-          {props.feed.map((post) => (
-            <div key={post.id} className="post">
-              <Post post={post} />
-            </div>
-          ))}
-        </main>
-      </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
-
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
-
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
-    </Layout>
-  )
+const Reviews: FC<Props> = ({ reviews }) => {
+    return (
+        <Layout>
+            <Link href={'/reviews/add'}>
+                <Button>Add a review</Button>
+            </Link>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                {reviews.map((r) => (
+                    <Review review={r} key={r.id} />
+                ))}
+            </Box>
+        </Layout>
+    )
 }
 
-export default Blog
+export default Reviews

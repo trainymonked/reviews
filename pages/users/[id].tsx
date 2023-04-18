@@ -1,21 +1,22 @@
 import { FC } from 'react'
 
 import Layout from '../../components/Layout'
-import { IReview } from '../../components/Review'
+import prisma from '../../lib/prisma'
+import Review, { IReview } from '../../components/Review'
+import { Avatar } from '@mui/material'
 
 type ParamsProps = {
     params: {
-        id: String
+        id: string
     }
 }
 
 export async function getServerSideProps({ params }: ParamsProps) {
     const { id } = params
 
-    const res = await fetch(`http://localhost:5000/users/${id}`)
-    const data = await res.json()
+    const user = await prisma.user.findUnique({ where: { id }, include: { reviews: true } })
 
-    if (res.status === 404) {
+    if (user === null) {
         return {
             notFound: true,
         }
@@ -23,29 +24,30 @@ export async function getServerSideProps({ params }: ParamsProps) {
 
     return {
         props: {
-            user: data,
+            user: {
+                ...user,
+                registrationDate: new Date(user.registrationDate).toLocaleDateString()
+            }
         },
     }
 }
 
 type Props = {
-    user
+    user: any
 }
 
 const UserPage: FC<Props> = ({
-    user: { avatar = 'null cdn', displayName = 'null name', registrationDate = 'null date', bio = 'null bio', reviews },
+    user: { image, name, registrationDate, bio, reviews },
 }) => {
     return (
         <Layout>
-            <p>
-                {avatar} | {displayName}
-            </p>
-            <p>member since {registrationDate}</p>
-            <p>{bio}</p>
+            <Avatar src={image} />
+            <p>{name} - member since {registrationDate}</p>
+            {bio && <p>{bio}</p>}
             <div>
                 Reviews:
-                {reviews?.map((r) => (
-                    <p key={r}>{r}</p>
+                {reviews?.map((review: IReview) => (
+                    <Review key={review.id} review={review} />
                 ))}
             </div>
         </Layout>

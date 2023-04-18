@@ -1,4 +1,5 @@
 import { FC } from 'react'
+import Head from 'next/head'
 import { Box, Button } from '@mui/material'
 
 import Layout from '../components/Layout'
@@ -23,14 +24,17 @@ type Props = {
 const Reviews: FC<Props> = ({ reviews }) => {
     return (
         <Layout>
-            <Link href={'/reviews/add'}>
-                <Button>Add a review</Button>
-            </Link>
+            <Head>
+                <title>Reviews</title>
+            </Head>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {reviews.map((r) => (
                     <Review review={r} key={r.id} />
                 ))}
             </Box>
+            <Link href={'/reviews/add'}>
+                <Button variant='contained' color='success'>Add a review</Button>
+            </Link>
         </Layout>
     )
 }

@@ -1,14 +1,31 @@
 import { FC, SyntheticEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button, Rating, TextField, TextareaAutosize } from '@mui/material'
+import Head from 'next/head'
+import { getSession } from 'next-auth/react'
+import { Box, Button, Chip, MenuItem, OutlinedInput, Rating, Select, SelectChangeEvent, TextField, TextareaAutosize } from '@mui/material'
 
 import Layout from '../../components/Layout'
+
+export async function getServerSideProps({ req }: { req: any }) {
+    const session = await getSession({ req })
+
+    if (session === null) {
+        return {
+            redirect: {
+                destination: '/api/auth/signin',
+                permanent: false,
+            },
+        }
+    }
+
+    return { props: {} }
+}
 
 const Draft: FC = () => {
     const [title, setTitle] = useState('')
     const [text, setText] = useState('')
     const [images, setImages] = useState([])
-    const [tags, setTags] = useState([])
+    const [tags, setTags] = useState<string[]>([])
     const [grade, setGrade] = useState(0)
 
     const { push } = useRouter()
@@ -17,11 +34,11 @@ const Draft: FC = () => {
         e.preventDefault()
         try {
             const body = { title, text, grade, images, tags }
-            // const res = await fetch('/api/review', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(body),
-            // })
+            const res = await fetch('/api/review/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            })
             // const reviewId = res...
             // push(`/reviews/${reviewId}`)
             push('/')
@@ -29,15 +46,53 @@ const Draft: FC = () => {
             console.error(error)
         }
     }
+
+    const handleTagsChange = (event: SelectChangeEvent<typeof tags>) => {
+        const {
+            target: { value },
+        } = event
+        setTags(typeof value === 'string' ? value.split(',') : value)
+    }
+
     return (
         <Layout>
+            <Head>
+                <title>Add a Review</title>
+            </Head>
             <form onSubmit={submitData}>
                 Title:
                 <TextField value={title} onChange={(e) => setTitle(e.target.value)} />
+
                 Text:
                 <TextareaAutosize value={text} onChange={(e) => setText(e.target.value)} />
-                Tags: Rating:
-                <Rating value={grade} onChange={(e) => setGrade(+e.target.value)} max={10} />
+
+                Tags:
+                <Select
+                    multiple
+                    value={tags}
+                    onChange={handleTagsChange}
+                    input={<OutlinedInput label="Chip" />}
+                    renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                            {selected.map((value) => (
+                                <Chip key={value} label={value} />
+                            ))}
+                        </Box>
+                    )}
+                >
+                    {/* loaded tags.map */}
+                    {['123', '456'].map((name) => (
+                        <MenuItem
+                            key={name}
+                            value={name}
+                        >
+                            {name}
+                        </MenuItem>
+                    ))}
+                </Select>
+
+                Rating:
+                <Rating value={grade} onChange={(_, v) => setGrade(v || grade)} max={10} />
                 <Button type='submit'>Add</Button>
             </form>
         </Layout>

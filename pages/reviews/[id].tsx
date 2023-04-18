@@ -1,21 +1,22 @@
 import { FC } from 'react'
+import Head from 'next/head'
 
 import Layout from '../../components/Layout'
 import Review, { IReview } from '../../components/Review'
+import prisma from '../../lib/prisma'
 
 type ParamsProps = {
     params: {
-        id: String
+        id: string
     }
 }
 
 export async function getServerSideProps({ params }: ParamsProps) {
     const { id } = params
 
-    const res = await fetch(`http://localhost:5000/reviews/${id}`)
-    const data: IReview = await res.json()
+    const review = await prisma.review.findUnique({ where: { id } })
 
-    if (res.status === 404) {
+    if (review === null) {
         return {
             notFound: true,
         }
@@ -23,7 +24,7 @@ export async function getServerSideProps({ params }: ParamsProps) {
 
     return {
         props: {
-            review: data,
+            review,
         },
     }
 }
@@ -35,6 +36,9 @@ type Props = {
 const ReviewPage: FC<Props> = ({ review }) => {
     return (
         <Layout>
+            <Head>
+                <title>{review.title}</title>
+            </Head>
             <Review review={review} fullPage />
         </Layout>
     )

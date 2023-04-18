@@ -3,7 +3,8 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dbu": "prisma db push && prisma generate"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",

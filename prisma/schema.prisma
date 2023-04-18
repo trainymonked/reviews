@@ -13,9 +13,9 @@ model Review {
   text      String
   images    String[]
   grade     String
-  tags      PieceTag[]
-  piece     Piece       @relation(fields:[pieceId], references:[id])
-  pieceId   String
+  // tags      PieceTag[]
+  // piece     Piece       @relation(fields:[pieceId], references:[id])
+  // pieceId   String
   author    User        @relation(fields:[authorId], references:[id])
   authorId  String
   comments  ReviewComment[]
@@ -33,7 +33,7 @@ model Piece {
   groupId       String
   author        User        @relation(fields:[authorId], references:[id])
   authorId      String
-  reviews       Review[]
+  // reviews       Review[]
 }
 
 model PieceGroup {
@@ -75,7 +75,7 @@ model PieceTag {
   name      String
   author    User    @relation(fields:[authorId], references:[id])
   authorId  String
-  reviews   Review[]
+  // reviews   Review[]
 }
 
 model Account {

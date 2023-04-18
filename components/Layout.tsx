@@ -9,7 +9,7 @@ type Props = {
 const Layout: FC<Props> = (props) => (
     <>
         <Header />
-        <Container>{props.children}</Container>
+        <Container sx={{ mt: 2 }}>{props.children}</Container>
         <style jsx global>{`
             body {
                 margin: 0;

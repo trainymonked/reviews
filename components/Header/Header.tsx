@@ -24,8 +24,8 @@ const Header: FC = () => {
         rightContent = (
             <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
                 <Typography>
-                    {/* {session.user.name} ({session.user.email}) */}
-                    Logged in user
+                    {session.user?.name} ({session.user?.email})
+                    {/* Logged in user */}
                 </Typography>
                 <Button size='small' variant='contained' onClick={() => signOut()}>
                     Log out
@@ -37,9 +37,12 @@ const Header: FC = () => {
     return (
         <AppBar position='static' color='inherit'>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Link href='/'>
                         <Typography color='inherit'>Reviews</Typography>
+                    </Link>
+                    <Link href='/users'>
+                        <Typography color='inherit'>Users</Typography>
                     </Link>
                 </Box>
                 {rightContent}

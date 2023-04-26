@@ -1,13 +1,19 @@
 import { FC, SyntheticEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Head from 'next/head'
-import { getSession } from 'next-auth/react'
 import { Box, Button, Chip, MenuItem, OutlinedInput, Rating, Select, SelectChangeEvent, TextField, TextareaAutosize } from '@mui/material'
 
 import Layout from '../../components/Layout'
 
-export async function getServerSideProps({ req }: { req: any }) {
-    const session = await getSession({ req })
+import { getSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../api/auth/[...nextauth]'
+import { NextApiRequest, NextApiResponse } from 'next'
+
+export async function getServerSideProps({ req, res }: { req: NextApiRequest, res: NextApiResponse }) {
+    const session = await getServerSession(req, res, authOptions)
+
+    console.log(session)
 
     if (session === null) {
         return {

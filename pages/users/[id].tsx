@@ -26,7 +26,8 @@ export async function getServerSideProps({ params }: ParamsProps) {
         props: {
             user: {
                 ...user,
-                registrationDate: new Date(user.registrationDate).toLocaleDateString()
+                registrationDate: new Date(user.registrationDate).toLocaleDateString(),
+                emailVerified: user.emailVerified ? new Date(user.emailVerified).toLocaleDateString() : null
             }
         },
     }

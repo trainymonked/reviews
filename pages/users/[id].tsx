@@ -3,7 +3,8 @@ import { FC } from 'react'
 import Layout from '../../components/Layout'
 import prisma from '../../lib/prisma'
 import Review, { IReview } from '../../components/Review'
-import { Avatar } from '@mui/material'
+import { Avatar, Box, Typography } from '@mui/material'
+import Head from 'next/head'
 
 type ParamsProps = {
     params: {
@@ -14,7 +15,7 @@ type ParamsProps = {
 export async function getServerSideProps({ params }: ParamsProps) {
     const { id } = params
 
-    const user = await prisma.user.findUnique({ where: { id }, include: { reviews: true } })
+    const user = await prisma.user.findUnique({ where: { id }, include: { reviews: { include: { piece: true } } } })
 
     if (user === null) {
         return {
@@ -27,8 +28,8 @@ export async function getServerSideProps({ params }: ParamsProps) {
             user: {
                 ...user,
                 registrationDate: new Date(user.registrationDate).toLocaleDateString(),
-                emailVerified: user.emailVerified ? new Date(user.emailVerified).toLocaleDateString() : null
-            }
+                emailVerified: user.emailVerified ? new Date(user.emailVerified).toLocaleDateString() : null,
+            },
         },
     }
 }
@@ -37,20 +38,24 @@ type Props = {
     user: any
 }
 
-const UserPage: FC<Props> = ({
-    user: { image, name, registrationDate, bio, reviews },
-}) => {
+const UserPage: FC<Props> = ({ user: { image, name, registrationDate, bio, reviews } }) => {
     return (
         <Layout>
+            <Head>
+                <title>User: {name}</title>
+            </Head>
+
             <Avatar src={image} />
-            <p>{name} - member since {registrationDate}</p>
-            {bio && <p>{bio}</p>}
-            <div>
-                Reviews:
+            <Typography>
+                {name} - member since {registrationDate}
+            </Typography>
+            {bio && <Typography>{bio}</Typography>}
+            <Box>
+                <Typography>Reviews</Typography>
                 {reviews?.map((review: IReview) => (
                     <Review key={review.id} review={review} />
                 ))}
-            </div>
+            </Box>
         </Layout>
     )
 }

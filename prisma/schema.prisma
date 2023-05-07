@@ -13,9 +13,9 @@ model Review {
   text      String
   images    String[]
   grade     String
-  // tags      PieceTag[]
-  // piece     Piece       @relation(fields:[pieceId], references:[id])
-  // pieceId   String
+  tags      PieceTag[]
+  piece     Piece       @relation(fields:[pieceId], references:[id])
+  pieceId   String
   author    User        @relation(fields:[authorId], references:[id])
   authorId  String
   comments  ReviewComment[]
@@ -23,21 +23,22 @@ model Review {
 }
 
 model Piece {
-  id            String      @id @default(cuid())
+  id            String        @id @default(cuid())
   titleEn       String
   titleRu       String?
   descriptionEn String
   descriptionRu String?
-  ratings       PieceRating[]
-  group         PieceGroup  @relation(fields:[groupId], references:[id])
+  group         PieceGroup    @relation(fields:[groupId], references:[id])
   groupId       String
-  author        User        @relation(fields:[authorId], references:[id])
+  author        User          @relation(fields:[authorId], references:[id])
   authorId      String
-  // reviews       Review[]
+  ratings       PieceRating[]
+  reviews       Review[]
 }
 
 model PieceGroup {
   id      String    @id @default(cuid())
+  handle  String    @unique
   nameEn  String
   nameRu  String?
   pieces  Piece[]
@@ -73,9 +74,7 @@ model PieceRating {
 model PieceTag {
   id        String  @id @default(cuid())
   name      String
-  author    User    @relation(fields:[authorId], references:[id])
-  authorId  String
-  // reviews   Review[]
+  reviews   Review[]
 }
 
 model Account {
@@ -123,7 +122,6 @@ model User {
   reviewComments    ReviewComment[]
   reviewLikes       ReviewLike[]
   pieceRatings      PieceRating[]
-  pieceTagsAdded    PieceTag[]
   piecesAdded       Piece[]
   accounts          Account[]
   sessions          Session[]

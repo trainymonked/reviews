@@ -8,7 +8,7 @@ import prisma from '../lib/prisma'
 import Link from '../components/Link'
 
 export async function getServerSideProps() {
-    const reviews = await prisma.review.findMany()
+    const reviews = await prisma.review.findMany({ include: { piece: true } })
 
     return {
         props: {
@@ -27,13 +27,16 @@ const Reviews: FC<Props> = ({ reviews }) => {
             <Head>
                 <title>Reviews</title>
             </Head>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                {reviews.map((r) => (
-                    <Review review={r} key={r.id} />
-                ))}
+            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2, flexBasis: '50%' }}>
+                    {reviews.map((r) => (
+                        <Review review={r} key={r.id} />
+                    ))}
+                </Box>
+                <Box sx={{ flexBasis: '40%' }}>tag cloud, etc</Box>
             </Box>
             <Link href={'/reviews/add'}>
-                <Button variant='contained' color='success'>Add a review</Button>
+                <Button variant='contained'>Add a review</Button>
             </Link>
         </Layout>
     )

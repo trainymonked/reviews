@@ -2,8 +2,8 @@ import { FC } from 'react'
 import Head from 'next/head'
 
 import Layout from '../../components/Layout'
-import Review, { IReview } from '../../components/Review'
 import prisma from '../../lib/prisma'
+import Piece, { IPiece } from '../../components/Piece'
 
 type ParamsProps = {
     params: {
@@ -14,9 +14,9 @@ type ParamsProps = {
 export async function getServerSideProps({ params }: ParamsProps) {
     const { id } = params
 
-    const review = await prisma.review.findUnique({ where: { id }, include: { piece: true } })
+    const piece = await prisma.piece.findUnique({ where: { id }, include: { group: true, reviews: true } })
 
-    if (review === null) {
+    if (piece === null) {
         return {
             notFound: true,
         }
@@ -24,22 +24,22 @@ export async function getServerSideProps({ params }: ParamsProps) {
 
     return {
         props: {
-            review,
+            piece,
         },
     }
 }
 
 type Props = {
-    review: IReview
+    piece: IPiece
 }
 
-const ReviewPage: FC<Props> = ({ review }) => {
+const ReviewPage: FC<Props> = ({ piece }) => {
     return (
         <Layout>
             <Head>
-                <title>{review.title}</title>
+                <title>{piece.titleEn}</title>
             </Head>
-            <Review review={review} fullPage />
+            <Piece piece={piece} fullPage />
         </Layout>
     )
 }

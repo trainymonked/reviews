@@ -4,6 +4,7 @@ import { Avatar } from '@mui/material'
 import Layout from '../../components/Layout'
 import prisma from '../../lib/prisma'
 import Link from '../../components/Link'
+import Head from 'next/head'
 
 export async function getServerSideProps() {
     const users = await prisma.user.findMany()
@@ -28,6 +29,9 @@ type Props = {
 const UsersPage: FC<Props> = ({ users }) => {
     return (
         <Layout>
+            <Head>
+                <title>Users</title>
+            </Head>
             {users.map((user) => {
                 return (<div key={user.id}>
                     <Avatar src={user.image} />

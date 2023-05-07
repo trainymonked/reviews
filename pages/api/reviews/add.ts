@@ -5,7 +5,7 @@ import prisma from '../../../lib/prisma'
 import { authOptions } from '../auth/[...nextauth]'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { title, text, grade, images, tags } = req.body
+    const { title, text, grade, images, tags, pieceId } = req.body
 
     const session = await getServerSession(req, res, authOptions)
 
@@ -16,14 +16,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (session !== null) {
         const result = await prisma.review.create({
             data: {
-                title: title,
-                text: text,
+                title,
+                text,
                 grade: String(grade),
-                images: images,
+                images,
                 // tags: tags,
-                author: { connect: { email: session?.user?.email || '' } },
+                piece: { connect: { id: pieceId } },
+                author: { connect: { id: session?.user?.id } },
             },
         })
-        res.json(result)
+
+        return res.json(result)
     }
 }

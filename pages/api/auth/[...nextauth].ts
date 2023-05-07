@@ -11,27 +11,26 @@ import prisma from '../../../lib/prisma'
 
 export const authOptions: NextAuthOptions = {
     providers: [
-        // GitHubProvider({
-        //     clientId: process.env.GITHUB_ID || '',
-        //     clientSecret: process.env.GITHUB_SECRET || '',
-        // }),
-        EmailProvider({
-            server: process.env.EMAIL_SERVER,
-            from: process.env.EMAIL_FROM
-        }),
         TwitterProvider({
             clientId: process.env.TWITTER_CLIENT_ID || '',
             clientSecret: process.env.TWITTER_CLIENT_SECRET || '',
-            version: '2.0'
+            version: '2.0',
         }),
         DiscordProvider({
             clientId: process.env.DISCORD_CLIENT_ID || '',
             clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
-        })
+        }),
+        GitHubProvider({
+            clientId: process.env.GITHUB_ID || '',
+            clientSecret: process.env.GITHUB_SECRET || '',
+        }),
+        EmailProvider({
+            server: process.env.EMAIL_SERVER,
+            from: process.env.EMAIL_FROM
+        }),
     ],
     adapter: PrismaAdapter(prisma),
     secret: process.env.NEXTAUTH_SECRET,
-    debug: true,
     callbacks: {
         async session({ session, user }) {
             // You can customize the session object here

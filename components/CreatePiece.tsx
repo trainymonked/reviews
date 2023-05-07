@@ -1,5 +1,16 @@
 import { FC, FormEvent, ReactNode, useState } from 'react'
-import { Box, Button, Chip, MenuItem, Modal, OutlinedInput, Select, SelectChangeEvent, TextField, Typography } from '@mui/material'
+import {
+    Box,
+    Button,
+    Chip,
+    MenuItem,
+    Modal,
+    OutlinedInput,
+    Select,
+    SelectChangeEvent,
+    TextField,
+    Typography,
+} from '@mui/material'
 import { useSession } from 'next-auth/react'
 
 type Props = {
@@ -18,7 +29,7 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
     const [pieceGroup, setPieceGroup] = useState('')
     const [pieceGroupHandle, setPieceGroupHandle] = useState('')
 
-    const session = useSession()
+    const session: { data: any } = useSession()
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault()

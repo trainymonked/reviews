@@ -7,7 +7,7 @@ import { authOptions } from '../auth/[...nextauth]'
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { id } = req.body
 
-    const session = await getServerSession(req, res, authOptions)
+    const session: { user: any } | null = await getServerSession(req, res, authOptions)
 
     if (session === null) {
         res.status(401).json({ message: '401' })

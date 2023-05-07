@@ -23,7 +23,7 @@ type Props = {
 }
 
 const Review: FC<Props> = ({ review, fullPage = false, noPiece = false }) => {
-    const { data: session } = useSession()
+    const { data: session }: { data: any } = useSession()
     const { push } = useRouter()
 
     const deleteReview = async (e: SyntheticEvent) => {

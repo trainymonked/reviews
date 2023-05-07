@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { signOut, useSession } from 'next-auth/react'
-import { Avatar, AppBar, Box, Button, IconButton, Toolbar, Typography, alpha, styled, Tooltip } from '@mui/material'
+import { Avatar, AppBar, Box, Button, IconButton, Toolbar, Typography, alpha, styled } from '@mui/material'
 import InputBase from '@mui/material/InputBase'
 import SearchIcon from '@mui/icons-material/Search'
 import AccountCircle from '@mui/icons-material/AccountCircle'

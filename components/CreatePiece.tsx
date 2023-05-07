@@ -1,5 +1,5 @@
-import { FC, useState } from 'react'
-import { Box, Button, Chip, MenuItem, Modal, OutlinedInput, Select, TextField, Typography } from '@mui/material'
+import { FC, FormEvent, ReactNode, useState } from 'react'
+import { Box, Button, Chip, MenuItem, Modal, OutlinedInput, Select, SelectChangeEvent, TextField, Typography } from '@mui/material'
 import { useSession } from 'next-auth/react'
 
 type Props = {
@@ -20,7 +20,7 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
 
     const session = useSession()
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: FormEvent) => {
         event.preventDefault()
 
         const newPiece = {
@@ -46,7 +46,7 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
         }
     }
 
-    const onPieceGroupChange = (event, child) => {
+    const onPieceGroupChange = (event: SelectChangeEvent, child: any) => {
         setPieceGroupHandle(child.props['data-handle'])
         setPieceGroup(child.props.value)
     }

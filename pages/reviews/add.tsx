@@ -92,7 +92,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
         setTags(typeof value === 'string' ? value.split(',') : value)
     }
 
-    const handlePieceChange = (event, child) => {
+    const handlePieceChange = (event: SelectChangeEvent, child: any) => {
         setPieceId(child.props['data-id'])
         setPiece(child.props.value)
     }

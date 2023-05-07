@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session = await getServerSession(req, res, authOptions)
 
     if (session === null) {
-        return res.status(401).json({ message: '401' })
+        res.status(401).json({ message: '401' })
     }
 
     if (session !== null) {
@@ -24,7 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 author: { connect: { id: session.user?.id } },
             },
         })
-        console.log(result)
-        return res.json(result)
+        res.json(result)
     }
 }

@@ -1,11 +1,11 @@
-import { FC, FormEvent, ReactNode, useState } from 'react'
+import { FC, FormEvent, useEffect, useState } from 'react'
 import {
     Box,
     Button,
-    Chip,
+    FormControl,
+    InputLabel,
     MenuItem,
     Modal,
-    OutlinedInput,
     Select,
     SelectChangeEvent,
     TextField,
@@ -15,7 +15,7 @@ import { useSession } from 'next-auth/react'
 
 type Props = {
     onCancel: () => void
-    onCreate: () => void
+    onCreate: (pieceId: string) => void
     shown: boolean
     pieceGroups: any[]
 }
@@ -28,6 +28,15 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
 
     const [pieceGroup, setPieceGroup] = useState('')
     const [pieceGroupHandle, setPieceGroupHandle] = useState('')
+
+    useEffect(() => {
+        setTitleEn('')
+        setTitleRu('')
+        setDescriptionEn('')
+        setDescriptionRu('')
+        setPieceGroup('')
+        setPieceGroupHandle('')
+    }, [shown])
 
     const session: { data: any } = useSession()
 
@@ -49,9 +58,8 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newPiece),
             })
-            if (res.ok) {
-                onCreate()
-            }
+            const piece = await res.json()
+            onCreate(piece.id)
         } catch (error) {
             console.error(error)
         }
@@ -64,68 +72,88 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
 
     return (
         <Modal open={shown}>
-            <form onSubmit={handleSubmit}>
-                <Box
-                    sx={{
-                        position: 'absolute' as 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        boxShadow: 24,
-                        outline: 'none',
-                        py: 3,
-                        px: 4,
-                    }}
-                >
-                    <Typography variant='h5'>Title</Typography>
-                    <TextField value={titleEn} onChange={(event) => setTitleEn(event.target.value)} />
-                    <Typography>Decription</Typography>
-                    <TextField
-                        value={descriptionEn}
-                        onChange={(event) => setDescriptionEn(event.target.value)}
-                        multiline
-                    />
+            <Box
+                sx={{
+                    position: 'absolute' as 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    bgcolor: 'background.paper',
+                    width: 400,
+                    boxShadow: 24,
+                    outline: 'none',
+                    px: 4,
+                }}
+            >
+                <Typography variant='h3' sx={{ textAlign: 'center', mt: 3 }}>
+                    Create a Piece
+                </Typography>
 
-                    <Typography variant='h5'>Title Rus (optional)</Typography>
-                    <TextField value={titleRu} onChange={(event) => setTitleRu(event.target.value)} />
-                    <Typography>Decription Rus (optional)</Typography>
-                    <TextField
-                        value={descriptionRu}
-                        onChange={(event) => setDescriptionRu(event.target.value)}
-                        multiline
-                    />
-
-                    <br />
-
-                    <Select
-                        value={pieceGroup}
-                        onChange={onPieceGroupChange}
-                        input={<OutlinedInput label='Chip' />}
-                        renderValue={(selected) => (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                <Chip label={selected} />
-                            </Box>
-                        )}
+                <form onSubmit={handleSubmit}>
+                    <Box
+                        sx={{
+                            mt: 2,
+                            mb: 3,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1,
+                        }}
                     >
-                        {pieceGroups.map((pieceGroup) => (
-                            <MenuItem key={pieceGroup.id} value={pieceGroup.nameEn} data-handle={pieceGroup.handle}>
-                                {pieceGroup.nameEn}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                        <FormControl>
+                            <InputLabel id='piece-group-select-label'>Group</InputLabel>
+                            <Select
+                                labelId='piece-group-select-label'
+                                label='Group'
+                                value={pieceGroup}
+                                onChange={onPieceGroupChange}
+                            >
+                                {pieceGroups.map((pieceGroup) => (
+                                    <MenuItem
+                                        key={pieceGroup.id}
+                                        value={pieceGroup.nameEn}
+                                        data-handle={pieceGroup.handle}
+                                    >
+                                        {pieceGroup.nameEn}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
 
-                    <br />
+                        <TextField
+                            label='Title'
+                            required
+                            value={titleEn}
+                            onChange={(event) => setTitleEn(event.target.value)}
+                        />
+                        <TextField
+                            multiline
+                            label='Description'
+                            required
+                            value={descriptionEn}
+                            onChange={(event) => setDescriptionEn(event.target.value)}
+                        />
 
-                    <Button variant='contained' color='success' type='submit'>
-                        Create
-                    </Button>
-                    <Button variant='outlined' color='error' type='button' onClick={onCancel}>
-                        Cancel
-                    </Button>
-                </Box>
-            </form>
+                        <TextField
+                            label='Title Rus (optional)'
+                            value={titleRu}
+                            onChange={(event) => setTitleRu(event.target.value)}
+                        />
+                        <TextField
+                            multiline
+                            label='Decription Rus (optional)'
+                            value={descriptionRu}
+                            onChange={(event) => setDescriptionRu(event.target.value)}
+                        />
+
+                        <Button variant='contained' color='success' type='submit'>
+                            Create
+                        </Button>
+                        <Button variant='outlined' color='error' type='button' onClick={onCancel}>
+                            Cancel
+                        </Button>
+                    </Box>
+                </form>
+            </Box>
         </Modal>
     )
 }

@@ -14,7 +14,24 @@ type ParamsProps = {
 export async function getServerSideProps({ params }: ParamsProps) {
     const { id } = params
 
-    const review = await prisma.review.findUnique({ where: { id }, include: { piece: true } })
+    const review = await prisma.review.findUnique({
+        where: { id },
+        include: {
+            piece: true,
+            author: {
+                select: {
+                    bio: true,
+                    id: true,
+                    image: true,
+                    name: true,
+                    registrationDate: true,
+                    reviewComments: true,
+                    reviews: true,
+                },
+            },
+            likes: true,
+        },
+    })
 
     if (review === null) {
         return {
@@ -24,7 +41,13 @@ export async function getServerSideProps({ params }: ParamsProps) {
 
     return {
         props: {
-            review,
+            review: {
+                ...review,
+                author: {
+                    ...review.author,
+                    registrationDate: new Date(review.author.registrationDate).toLocaleDateString(),
+                },
+            },
         },
     }
 }

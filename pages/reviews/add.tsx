@@ -1,15 +1,15 @@
-import { FC, SyntheticEvent, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { FC, SyntheticEvent, useState, useEffect } from 'react'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Head from 'next/head'
+import { getServerSession } from 'next-auth'
 import {
     Autocomplete,
     Box,
     Button,
-    Chip,
     FormControl,
     InputLabel,
     MenuItem,
-    OutlinedInput,
     Rating,
     Select,
     SelectChangeEvent,
@@ -17,12 +17,9 @@ import {
     Typography,
 } from '@mui/material'
 
-import Layout from '../../components/Layout'
-
-import { getServerSession } from 'next-auth'
 import { authOptions } from '../api/auth/[...nextauth]'
-import { NextApiRequest, NextApiResponse } from 'next'
 import prisma from '../../lib/prisma'
+import Layout from '../../components/Layout'
 import { IPiece } from '../../components/Piece'
 import CreatePiece from '../../components/CreatePiece'
 
@@ -60,13 +57,22 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
     const [images, setImages] = useState([])
     const [tags, setTags] = useState<string[]>([])
     const [grade, setGrade] = useState(0)
-
     const [piece, setPiece] = useState('')
     const [pieceId, setPieceId] = useState<string>('')
 
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isSelectOpen, setIsSelectOpen] = useState(false)
 
     const { push } = useRouter()
+    const searchParams = useSearchParams()
+
+    useEffect(() => {
+        const pieceId = searchParams.get('pieceId')
+        if (pieceId) {
+            setPieceId(pieceId)
+            setPiece(pieces.find((piece) => piece.id === pieceId)?.titleEn || '')
+        }
+    }, [searchParams])
 
     const submitData = async (e: SyntheticEvent) => {
         e.preventDefault()
@@ -85,12 +91,12 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
         }
     }
 
-    const handleTagsChange = (event: SelectChangeEvent<typeof tags>) => {
-        const {
-            target: { value },
-        } = event
-        setTags(typeof value === 'string' ? value.split(',') : value)
-    }
+    // const handleTagsChange = (event: SelectChangeEvent<typeof tags>) => {
+    //     const {
+    //         target: { value },
+    //     } = event
+    //     setTags(typeof value === 'string' ? value.split(',') : value)
+    // }
 
     const handlePieceChange = (event: SelectChangeEvent, child: any) => {
         setPieceId(child.props['data-id'])
@@ -99,6 +105,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
 
     const handleCreatePiece = (event: SyntheticEvent) => {
         event.preventDefault()
+        setIsSelectOpen(false)
         setIsModalOpen(true)
     }
 
@@ -114,11 +121,35 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
 
             <form onSubmit={submitData}>
                 <Box sx={{ width: '40%', mx: 'auto', mt: 5, mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField label={'Title'} required value={title} onChange={(e) => setTitle(e.target.value)} />
+                    <FormControl>
+                        <InputLabel id='piece-select-label'>Piece</InputLabel>
+                        <Select
+                            open={isSelectOpen}
+                            onOpen={() => setIsSelectOpen(true)}
+                            onClose={() => setIsSelectOpen(false)}
+                            labelId='piece-select-label'
+                            label='Piece'
+                            value={piece}
+                            onChange={handlePieceChange}
+                        >
+                            {pieces.map((piece) => (
+                                <MenuItem key={piece.id} value={piece.titleEn} data-id={piece.id}>
+                                    {piece.titleEn}
+                                </MenuItem>
+                            ))}
+                            <Box sx={{ textAlign: 'center', mt: 1 }}>
+                                <Button onClick={handleCreatePiece} variant='outlined'>
+                                    Create Piece
+                                </Button>
+                            </Box>
+                        </Select>
+                    </FormControl>
+
+                    <TextField label='Title' required value={title} onChange={(e) => setTitle(e.target.value)} />
                     <TextField
                         multiline
                         minRows={5}
-                        label={'Text'}
+                        label='Text'
                         required
                         value={text}
                         onChange={(e) => setText(e.target.value)}
@@ -149,22 +180,6 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                         }}
                     /> */}
 
-                    <FormControl>
-                        <InputLabel id='piece-select-label'>Piece</InputLabel>
-                        <Select labelId='piece-select-label' label='Piece' value={piece} onChange={handlePieceChange}>
-                            {pieces.map((piece) => (
-                                <MenuItem key={piece.id} value={piece.titleEn} data-id={piece.id}>
-                                    {piece.titleEn}
-                                </MenuItem>
-                            ))}
-                            <Box sx={{ textAlign: 'center', mt: 1 }}>
-                                <Button onClick={handleCreatePiece} variant='outlined'>
-                                    Create Piece
-                                </Button>
-                            </Box>
-                        </Select>
-                    </FormControl>
-
                     <Box sx={{ mx: 'auto' }}>
                         <Typography sx={{ textAlign: 'center', mb: 1 }}>Your Rating</Typography>
                         <Rating
@@ -185,7 +200,10 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                 pieceGroups={pieceGroups}
                 shown={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
-                onCreate={() => push('/pieces')}
+                onCreate={(pieceId) => {
+                    setIsModalOpen(false)
+                    push(`/reviews/add?pieceId=${pieceId}`)
+                }}
             />
         </Layout>
     )

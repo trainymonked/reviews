@@ -47,7 +47,7 @@ model PieceGroup {
 model ReviewComment {
   id        String  @id @default(cuid())
   text      String
-  review    Review  @relation(fields:[reviewId], references:[id])
+  review    Review  @relation(fields:[reviewId], references:[id], onDelete: Cascade)
   reviewId  String
   author    User    @relation(fields:[authorId], references:[id])
   authorId  String
@@ -55,18 +55,18 @@ model ReviewComment {
 
 model ReviewLike {
   id        String  @id @default(cuid())
-  review    Review  @relation(fields:[reviewId], references:[id])
+  review    Review  @relation(fields:[reviewId], references:[id], onDelete: Cascade)
   reviewId  String
-  author    User    @relation(fields:[authorId], references:[id])
+  author    User    @relation(fields:[authorId], references:[id], onDelete: Cascade)
   authorId  String
   liked     Boolean
 }
 
 model PieceRating {
   id        String  @id @default(cuid())
-  piece     Piece   @relation(fields:[pieceId], references:[id])
+  piece     Piece   @relation(fields:[pieceId], references:[id], onDelete: Cascade)
   pieceId   String
-  author    User    @relation(fields:[authorId], references:[id])
+  author    User    @relation(fields:[authorId], references:[id], onDelete: Cascade)
   authorId  String
   stars     String
 }

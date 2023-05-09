@@ -1,9 +1,12 @@
 import { FC, Key } from 'react'
+import { IReview } from './Review'
 
-type ReviewComment = {
+export interface IReviewComment {
     id: Key
     text: String
+    review: IReview
     reviewId: Key
+    author: any
     authorId: Key
 }
 

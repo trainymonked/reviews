@@ -1,11 +1,12 @@
 import { FC, SyntheticEvent, Key, useState, useEffect } from 'react'
-import { Box, Button, Rating, Typography } from '@mui/material'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Link from './Link'
-
+import { useRouter } from 'next/router'
+import { useIntl } from 'react-intl'
+import { Box, Button, Rating, Typography } from '@mui/material'
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
 import FavoriteIcon from '@mui/icons-material/Favorite'
+
+import Link from './Link'
 
 export interface IReview {
     id: Key
@@ -18,6 +19,7 @@ export interface IReview {
     pieceId: Key
     author: any
     authorId: Key
+    creationDate: number
     comments: any[]
     likes: any[]
 }
@@ -26,16 +28,18 @@ type Props = {
     review: IReview
     fullPage?: boolean
     noPiece?: boolean
+    noAuthor?: boolean
 }
 
-const Review: FC<Props> = ({ review, fullPage = false, noPiece = false }) => {
+const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor = false }) => {
     const { data: session }: { data: any } = useSession()
     const [liked, setLiked] = useState(false)
 
     const { push } = useRouter()
+    const intl = useIntl()
 
     useEffect(() => {
-        setLiked(review.likes.findIndex((like) => like.liked && like.authorId === session?.user?.id) !== -1)
+        setLiked(!!review.likes.find((like) => like.liked && like.authorId === session?.user?.id))
     }, [session?.user?.id])
 
     const deleteReview = async (e: SyntheticEvent) => {
@@ -81,8 +85,13 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false }) => {
         return (
             <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column', mb: 2 }}>
                 <Typography variant='h2'>{review.title}</Typography>
-                <Link href={`/pieces/${review.pieceId}`}>Piece: {review.piece.titleEn}</Link>
-                <Link href={`/users/${review.authorId}`}>Author: {review.author.name}</Link>
+                <Link href={`/pieces/${review.pieceId}`}>
+                    {intl.formatMessage({ id: 'piece' })}:{' '}
+                    {intl.locale === 'en' ? review.piece.titleEn : review.piece.titleRu || review.piece.titleEn}
+                </Link>
+                <Link href={`/users/${review.authorId}`}>
+                    {intl.formatMessage({ id: 'author' })}: {review.author.name}
+                </Link>
 
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                     <Rating value={1} max={1} readOnly />
@@ -100,7 +109,9 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false }) => {
                         width: 'min-content',
                         py: 0.5,
                         px: 1,
+                        userSelect: 'none',
                     }}
+                    title={!session?.user ? intl.formatMessage({ id: 'sign_in_to_like' }) : undefined}
                 >
                     <Rating
                         max={1}
@@ -116,7 +127,7 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false }) => {
                 {session?.user?.id === review.authorId && (
                     <Box sx={{ mx: 'auto' }}>
                         <Button variant='contained' color='error' onClick={deleteReview}>
-                            Delete review
+                            {intl.formatMessage({ id: 'delete_review' })}
                         </Button>
                     </Box>
                 )}
@@ -139,13 +150,20 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false }) => {
             }}
         >
             <Typography variant='h5'>{review.title}</Typography>
-            {!noPiece && <Link href={`/pieces/${review.pieceId}`}>{review.piece.titleEn}</Link>}
-            <Typography>
-                by <Link href={`/users/${review.authorId}`}>{review.author.name}</Link>
-            </Typography>
-            <Typography>{review.text.slice(0, 140)}...</Typography>
+            {!noPiece && (
+                <Link href={`/pieces/${review.pieceId}`}>
+                    {intl.locale === 'en' ? review.piece.titleEn : review.piece.titleRu || review.piece.titleEn}
+                </Link>
+            )}
+            {!noAuthor && (
+                <Typography>
+                    {intl.formatMessage({ id: 'by' })}{' '}
+                    <Link href={`/users/${review.authorId}`}>{review.author.name}</Link>
+                </Typography>
+            )}
+            <Typography>{review.text.slice(0, 130)}...</Typography>
             <Link href={`/reviews/${review.id}`}>
-                <Typography>Show full review</Typography>
+                <Typography>{intl.formatMessage({ id: 'show_full_review' })}</Typography>
             </Link>
 
             <Box
@@ -157,7 +175,9 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false }) => {
                     width: 'min-content',
                     py: 0.5,
                     px: 1,
+                    userSelect: 'none',
                 }}
+                title={!session?.user ? intl.formatMessage({ id: 'sign_in_to_like' }) : undefined}
             >
                 <Rating
                     max={1}

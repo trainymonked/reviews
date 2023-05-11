@@ -8,18 +8,19 @@ datasource db {
 }
 
 model Review {
-  id        String      @id @default(cuid())
-  title     String
-  text      String
-  images    String[]
-  grade     String
-  tags      PieceTag[]
-  piece     Piece       @relation(fields:[pieceId], references:[id])
-  pieceId   String
-  author    User        @relation(fields:[authorId], references:[id])
-  authorId  String
-  comments  ReviewComment[]
-  likes     ReviewLike[]
+  id            String      @id @default(cuid())
+  title         String
+  text          String
+  images        String[]
+  grade         String
+  tags          PieceTag[]
+  piece         Piece       @relation(fields:[pieceId], references:[id])
+  pieceId       String
+  author        User        @relation(fields:[authorId], references:[id])
+  authorId      String
+  creationDate  DateTime    @default(now())
+  comments      ReviewComment[]
+  likes         ReviewLike[]
 }
 
 model Piece {
@@ -32,6 +33,7 @@ model Piece {
   groupId       String
   author        User          @relation(fields:[authorId], references:[id])
   authorId      String
+  creationDate  DateTime      @default(now())
   ratings       PieceRating[]
   reviews       Review[]
 }
@@ -45,12 +47,13 @@ model PieceGroup {
 }
 
 model ReviewComment {
-  id        String  @id @default(cuid())
-  text      String
-  review    Review  @relation(fields:[reviewId], references:[id], onDelete: Cascade)
-  reviewId  String
-  author    User    @relation(fields:[authorId], references:[id])
-  authorId  String
+  id            String    @id @default(cuid())
+  text          String
+  review        Review    @relation(fields:[reviewId], references:[id], onDelete: Cascade)
+  reviewId      String
+  author        User      @relation(fields:[authorId], references:[id])
+  authorId      String
+  creationDate  DateTime  @default(now())
 }
 
 model ReviewLike {
@@ -72,9 +75,10 @@ model PieceRating {
 }
 
 model PieceTag {
-  id        String  @id @default(cuid())
-  name      String
-  reviews   Review[]
+  id            String    @id @default(cuid())
+  name          String
+  reviews       Review[]
+  creationDate  DateTime  @default(now())
 }
 
 model Account {
@@ -118,6 +122,7 @@ model User {
   bio               String?
   registrationDate  DateTime  @default(now())
   isAdmin           Boolean   @default(false)
+  preferredLocale   String?
   reviews           Review[]
   reviewComments    ReviewComment[]
   reviewLikes       ReviewLike[]

@@ -45,7 +45,16 @@ export async function getServerSideProps({ params }: ParamsProps) {
                 ...review,
                 author: {
                     ...review.author,
-                    registrationDate: new Date(review.author.registrationDate).toLocaleDateString(),
+                    registrationDate: Date.parse(review.author.registrationDate.toJSON()),
+                    reviews: review.author.reviews.map((r) => ({
+                        ...r,
+                        creationDate: Date.parse(r.creationDate.toJSON()),
+                    })),
+                },
+                creationDate: Date.parse(review.creationDate.toJSON()),
+                piece: {
+                    ...review.piece,
+                    creationDate: Date.parse(review.piece.creationDate.toJSON()),
                 },
             },
         },

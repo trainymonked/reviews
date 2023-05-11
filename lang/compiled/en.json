@@ -1,0 +1,224 @@
+{
+  "add_review": [
+    {
+      "type": 0,
+      "value": "Add a Review"
+    }
+  ],
+  "author": [
+    {
+      "type": 0,
+      "value": "Author"
+    }
+  ],
+  "by": [
+    {
+      "type": 0,
+      "value": "by"
+    }
+  ],
+  "cancel": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "comment(s)": [
+    {
+      "type": 0,
+      "value": "comment(s)"
+    }
+  ],
+  "comments": [
+    {
+      "type": 0,
+      "value": "Comments"
+    }
+  ],
+  "create": [
+    {
+      "type": 0,
+      "value": "Create"
+    }
+  ],
+  "create_piece": [
+    {
+      "type": 0,
+      "value": "Create a Piece"
+    }
+  ],
+  "delete_review": [
+    {
+      "type": 0,
+      "value": "Delete review"
+    }
+  ],
+  "latest_reviews": [
+    {
+      "type": 0,
+      "value": "Latest reviews"
+    }
+  ],
+  "member_since": [
+    {
+      "type": 0,
+      "value": "Member since"
+    }
+  ],
+  "no_review_comments": [
+    {
+      "type": 0,
+      "value": "No review comments"
+    }
+  ],
+  "no_reviews": [
+    {
+      "type": 0,
+      "value": "No reviews"
+    }
+  ],
+  "page.pieces.title": [
+    {
+      "type": 0,
+      "value": "Pieces"
+    }
+  ],
+  "page.reviews.title": [
+    {
+      "type": 0,
+      "value": "Reviews"
+    }
+  ],
+  "page.users.title": [
+    {
+      "type": 0,
+      "value": "Users"
+    }
+  ],
+  "pages.reviews_add.title": [
+    {
+      "type": 0,
+      "value": "Add a Review"
+    }
+  ],
+  "piece": [
+    {
+      "type": 0,
+      "value": "Piece"
+    }
+  ],
+  "piece_description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "piece_description_ru": [
+    {
+      "type": 0,
+      "value": "Description in Russian (optional)"
+    }
+  ],
+  "piece_group": [
+    {
+      "type": 0,
+      "value": "Group"
+    }
+  ],
+  "piece_title": [
+    {
+      "type": 0,
+      "value": "Title"
+    }
+  ],
+  "piece_title_ru": [
+    {
+      "type": 0,
+      "value": "Title in Russian (optional)"
+    }
+  ],
+  "review(s)": [
+    {
+      "type": 0,
+      "value": "review(s)"
+    }
+  ],
+  "review_add": [
+    {
+      "type": 0,
+      "value": "Add"
+    }
+  ],
+  "review_rating": [
+    {
+      "type": 0,
+      "value": "Your rating"
+    }
+  ],
+  "review_tags": [
+    {
+      "type": 0,
+      "value": "Tags"
+    }
+  ],
+  "review_text": [
+    {
+      "type": 0,
+      "value": "Text"
+    }
+  ],
+  "review_title": [
+    {
+      "type": 0,
+      "value": "Title"
+    }
+  ],
+  "reviews": [
+    {
+      "type": 0,
+      "value": "Reviews"
+    }
+  ],
+  "search_placeholder": [
+    {
+      "type": 0,
+      "value": "Search..."
+    }
+  ],
+  "show_full_review": [
+    {
+      "type": 0,
+      "value": "Show full review"
+    }
+  ],
+  "sign_in_to_like": [
+    {
+      "type": 0,
+      "value": "Sign in to leave a like"
+    }
+  ],
+  "switch_language": [
+    {
+      "type": 0,
+      "value": "Русский"
+    }
+  ],
+  "unnamed_user": [
+    {
+      "type": 0,
+      "value": "Unnamed user"
+    }
+  ],
+  "user_reviews": [
+    {
+      "type": 0,
+      "value": "User reviews"
+    }
+  ],
+  "visit_piece_page": [
+    {
+      "type": 0,
+      "value": "Visit piece page"
+    }
+  ]
+}

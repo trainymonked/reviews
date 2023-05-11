@@ -1,9 +1,12 @@
 {
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run i18n && next build",
     "start": "next start",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "extract:i18n": "formatjs extract '{pages,components}/**/*.{js,ts,tsx}' --format simple --id-interpolation-pattern '[sha512:contenthash:base64:6]' --out-file lang/compiled/en.json",
+    "compile:i18n": "formatjs compile-folder --ast --format simple lang lang/compiled",
+    "i18n": "npm run extract:i18n && npm run compile:i18n",
     "prisma:generate": "prisma generate",
     "dbu": "prisma db push && prisma db seed"
   },
@@ -20,12 +23,14 @@
     "nodemailer": "^6.9.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-markdown": "^8.0.0",
-    "swr": "^2.1.5"
+    "react-intl": "^6.4.2",
+    "react-markdown": "^8.0.0"
   },
   "devDependencies": {
+    "@formatjs/cli": "^6.1.1",
     "@types/node": "^18.16.2",
     "@types/react": "^18.0.33",
+    "babel-plugin-formatjs": "^10.5.1",
     "eslint": "8.37.0",
     "eslint-config-next": "13.3.0",
     "prisma": "^4.12.0",

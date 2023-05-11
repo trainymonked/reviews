@@ -1,7 +1,8 @@
 import { FC } from 'react'
 import { signOut, useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { Avatar, AppBar, Box, IconButton, Toolbar, Typography, alpha, styled } from '@mui/material'
+import { useRouter } from 'next/router'
+import { useIntl } from 'react-intl'
+import { Avatar, AppBar, Box, IconButton, Toolbar, Typography, alpha, styled, Button } from '@mui/material'
 import InputBase from '@mui/material/InputBase'
 import SearchIcon from '@mui/icons-material/Search'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -52,7 +53,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const Header: FC = () => {
     const { data: session, status } = useSession()
 
-    const { push } = useRouter()
+    const { push, pathname, query, asPath } = useRouter()
+    const intl = useIntl()
 
     let rightContent: any
 
@@ -96,23 +98,55 @@ const Header: FC = () => {
     return (
         <AppBar position='static' color='inherit'>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                    }}
+                >
                     <Link href='/'>
-                        <Typography color='inherit'>Reviews</Typography>
+                        <Typography color='inherit'>{intl.formatMessage({ id: 'page.reviews.title' })}</Typography>
                     </Link>
                     <Link href='/users'>
-                        <Typography color='inherit'>Users</Typography>
+                        <Typography color='inherit'>{intl.formatMessage({ id: 'page.users.title' })}</Typography>
                     </Link>
                     <Link href='/pieces'>
-                        <Typography color='inherit'>Pieces</Typography>
+                        <Typography color='inherit'>{intl.formatMessage({ id: 'page.pieces.title' })}</Typography>
                     </Link>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        gap: 2,
+                        alignItems: 'center',
+                    }}
+                >
+                    <Button
+                        onClick={async () => {
+                            const newLocale = intl.locale === 'en' ? 'ru' : 'en'
+                            if (session?.user) {
+                                const body = { preferredLocale: newLocale }
+                                await fetch('/api/locale/update', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(body),
+                                })
+                                push({ pathname, query }, asPath, { locale: newLocale })
+                            } else {
+                                push({ pathname, query }, asPath, { locale: newLocale })
+                            }
+                        }}
+                        variant='outlined'
+                        size='small'
+                    >
+                        {intl.formatMessage({ id: 'switch_language' })}
+                    </Button>
                     <Search>
                         <SearchIconWrapper>
                             <SearchIcon />
                         </SearchIconWrapper>
-                        <StyledInputBase placeholder='Search…' />
+                        <StyledInputBase placeholder={intl.formatMessage({ id: 'search_placeholder' })} />
                     </Search>
                     <IconButton
                         sx={{ width: '32px', height: '32px' }}

@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { Avatar, Box, Typography } from '@mui/material'
 import Head from 'next/head'
+import { useIntl } from 'react-intl'
 
 import Layout from '../../components/Layout'
 import prisma from '../../lib/prisma'
@@ -50,13 +51,23 @@ export async function getServerSideProps({ params }: ParamsProps) {
         props: {
             user: {
                 ...user,
-                registrationDate: new Date(user.registrationDate).toLocaleDateString(),
-                reviews: user.reviews.map((review: IReview) => ({
+                registrationDate: Date.parse(user.registrationDate.toJSON()),
+                emailVerified: user.emailVerified ? Date.parse(user.emailVerified.toJSON()) : null,
+                reviews: user.reviews.map((review: any) => ({
                     ...review,
                     author: {
                         ...review.author,
-                        registrationDate: new Date(review.author.registrationDate).toLocaleDateString(),
+                        registrationDate: Date.parse(review.author.registrationDate.toJSON()),
+                        reviews: review.author.reviews.map((r: any) => ({
+                            ...r,
+                            creationDate: Date.parse(r.creationDate.toJSON()),
+                        })),
                     },
+                    piece: {
+                        ...review.piece,
+                        creationDate: Date.parse(review.piece.creationDate.toJSON()),
+                    },
+                    creationDate: Date.parse(review.creationDate.toJSON()),
                 })),
             },
         },
@@ -68,18 +79,23 @@ type Props = {
 }
 
 const UserPage: FC<Props> = ({ user: { image, name, registrationDate, bio, reviews, reviewComments } }) => {
+    const intl = useIntl()
+
     return (
         <Layout>
             <Head>
-                <title>{name || 'Unnamed user'}</title>
+                <title>{name || intl.formatMessage({ id: 'unnamed_user' })}</title>
             </Head>
 
             <Box sx={{ maxWidth: '800px', mx: 'auto', my: 5 }}>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                     <Avatar src={image} sx={{ width: 64, height: 64 }} />
-                    <Typography>{name || 'no name'}</Typography>
+                    <Typography>{name || intl.formatMessage({ id: 'unnamed_user' })}</Typography>
                 </Box>
-                <Typography mt={2}>Member since {registrationDate}</Typography>
+                <Typography mt={2}>
+                    {intl.formatMessage({ id: 'member_since' })}{' '}
+                    {new Date(registrationDate).toLocaleDateString(intl.locale)}
+                </Typography>
 
                 {bio && <Typography>{bio}</Typography>}
 
@@ -87,16 +103,16 @@ const UserPage: FC<Props> = ({ user: { image, name, registrationDate, bio, revie
                     {reviews.length > 0 ? (
                         <>
                             <Typography variant='h6' mb={2}>
-                                Reviews:
+                                {intl.formatMessage({ id: 'reviews' })}:
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
                                 {reviews.map((review: IReview) => (
-                                    <Review key={review.id} review={review} />
+                                    <Review key={review.id} review={review} noAuthor />
                                 ))}
                             </Box>
                         </>
                     ) : (
-                        <Typography>No reviews</Typography>
+                        <Typography>{intl.formatMessage({ id: 'no_reviews' })}</Typography>
                     )}
                 </Box>
 
@@ -104,14 +120,14 @@ const UserPage: FC<Props> = ({ user: { image, name, registrationDate, bio, revie
                     {reviewComments.length > 0 ? (
                         <>
                             <Typography variant='h6' mb={2}>
-                                Comments:
+                                {intl.formatMessage({ id: 'comments' })}:
                             </Typography>
                             {reviewComments.map((reviewComment: IReviewComment) => (
                                 <ReviewComment key={reviewComment.id} />
                             ))}
                         </>
                     ) : (
-                        <Typography>No review comments</Typography>
+                        <Typography>{intl.formatMessage({ id: 'no_review_comments' })}</Typography>
                     )}
                 </Box>
             </Box>

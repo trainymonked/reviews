@@ -32,14 +32,15 @@ export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        async session({ session, user }) {
-            // You can customize the session object here
-            let result: any
-            result = session
-            result.extended = { ...user }
-            result.user.id = user.id
-            return result
-        }
+        session: async ({ session, user }: any) => ({
+            ...session,
+            user: {
+                ...session.user,
+                id: user.id,
+                isAdmin: user.isAdmin,
+                preferredLocale: user.preferredLocale
+            }
+        })
     }
 }
 

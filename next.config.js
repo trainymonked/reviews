@@ -14,6 +14,14 @@ const nextConfig = {
             },
         ]
     },
+    reactStrictMode: true,
+    i18n: {
+        locales: ['en', 'ru'],
+        defaultLocale: 'en',
+    },
+    experimental: {
+        forceSwcTransforms: true,
+    },
 }
 
 module.exports = nextConfig

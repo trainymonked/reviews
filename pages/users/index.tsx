@@ -1,6 +1,7 @@
 import { FC } from 'react'
 import { Avatar, Box, Typography } from '@mui/material'
 import Head from 'next/head'
+import { useIntl } from 'react-intl'
 
 import Layout from '../../components/Layout'
 import prisma from '../../lib/prisma'
@@ -24,8 +25,8 @@ export async function getServerSideProps() {
                 const { email, ...user } = u
                 return {
                     ...user,
-                    registrationDate: new Date(user.registrationDate).toLocaleDateString(),
-                    emailVerified: user.emailVerified ? new Date(user.emailVerified).toLocaleDateString() : null,
+                    registrationDate: Date.parse(user.registrationDate.toJSON()),
+                    emailVerified: user.emailVerified ? Date.parse(user.emailVerified.toJSON()) : null,
                 }
             }),
         },
@@ -37,10 +38,12 @@ type Props = {
 }
 
 const UsersPage: FC<Props> = ({ users }) => {
+    const intl = useIntl()
+
     return (
         <Layout>
             <Head>
-                <title>Users</title>
+                <title>{intl.formatMessage({ id: 'page.users.title' })}</title>
             </Head>
             <Box sx={{ maxWidth: '900px', mx: 'auto', my: 5, display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {users.map((user) => {
@@ -63,14 +66,21 @@ const UsersPage: FC<Props> = ({ users }) => {
                                 </Link>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                                     <Link underline='hover' href={`/users/${user.id}`}>
-                                        {user.name || 'no name'}
+                                        {user.name || intl.formatMessage({ id: 'unnamed_user' })}
                                     </Link>
-                                    <Typography>Member since {user.registrationDate}</Typography>
+                                    <Typography>
+                                        {intl.formatMessage({ id: 'member_since' })}{' '}
+                                        {new Date(user.registrationDate).toLocaleDateString(intl.locale)}
+                                    </Typography>
                                 </Box>
                             </Box>
                             <Box>
-                                <Typography>{user._count.reviews} review(s)</Typography>
-                                <Typography>{user._count.reviewComments} comment(s)</Typography>
+                                <Typography>
+                                    {user._count.reviews} {intl.formatMessage({ id: 'review(s)' })}
+                                </Typography>
+                                <Typography>
+                                    {user._count.reviewComments} {intl.formatMessage({ id: 'comment(s)' })}
+                                </Typography>
                             </Box>
                         </Box>
                     )

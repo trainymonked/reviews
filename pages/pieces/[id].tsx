@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth'
 import Head from 'next/head'
+import { useIntl } from 'react-intl'
 
 import Layout from '../../components/Layout'
 import prisma from '../../lib/prisma'
@@ -41,8 +42,8 @@ export async function getServerSideProps({ req, res, params }: ParamsProps) {
                     likes: {
                         where: {
                             liked: true,
-                        }
-                    }
+                        },
+                    },
                 },
             },
         },
@@ -62,9 +63,15 @@ export async function getServerSideProps({ req, res, params }: ParamsProps) {
                     ...review,
                     author: {
                         ...review.author,
-                        registrationDate: new Date(review.author.registrationDate).toLocaleDateString(),
+                        registrationDate: Date.parse(review.author.registrationDate.toJSON()),
+                        reviews: review.author.reviews.map((r) => ({
+                            ...r,
+                            creationDate: Date.parse(r.creationDate.toJSON()),
+                        })),
                     },
+                    creationDate: Date.parse(review.creationDate.toJSON()),
                 })),
+                creationDate: Date.parse(piece.creationDate.toJSON()),
             },
             isAuthenticated: !!session,
         },
@@ -77,10 +84,11 @@ type Props = {
 }
 
 const ReviewPage: FC<Props> = ({ piece, isAuthenticated }) => {
+    const intl = useIntl()
     return (
         <Layout>
             <Head>
-                <title>{piece.titleEn}</title>
+                <title>{intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn}</title>
             </Head>
             <Piece piece={piece} fullPage isAuthenticated={isAuthenticated} />
         </Layout>

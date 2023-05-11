@@ -16,6 +16,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material'
+import { useIntl } from 'react-intl'
 
 import { authOptions } from '../api/auth/[...nextauth]'
 import prisma from '../../lib/prisma'
@@ -65,14 +66,14 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
 
     const { push } = useRouter()
     const searchParams = useSearchParams()
+    const intl = useIntl()
 
     useEffect(() => {
-        const pieceId = searchParams.get('pieceId')
-        if (pieceId) {
-            setPieceId(pieceId)
-            setPiece(pieces.find((piece) => piece.id === pieceId)?.titleEn || '')
-        }
-    }, [searchParams])
+        const pId = pieceId || searchParams.get('pieceId') || ''
+        setPieceId(pId)
+        const piece = pieces.find((piece) => piece.id === pId)
+        setPiece(piece ? (intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn) : '')
+    }, [searchParams, intl.locale])
 
     const submitData = async (e: SyntheticEvent) => {
         e.preventDefault()
@@ -112,51 +113,63 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
     return (
         <Layout>
             <Head>
-                <title>Add a Review</title>
+                <title>{intl.formatMessage({ id: 'pages.reviews_add.title' })}</title>
             </Head>
 
             <Typography variant='h2' sx={{ textAlign: 'center', mt: 5 }}>
-                Add a Review
+                {intl.formatMessage({ id: 'add_review' })}
             </Typography>
 
             <form onSubmit={submitData}>
                 <Box sx={{ width: '40%', mx: 'auto', mt: 5, mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
                     <FormControl>
-                        <InputLabel id='piece-select-label'>Piece</InputLabel>
+                        <InputLabel id='piece-select-label'>{intl.formatMessage({ id: 'piece' })}</InputLabel>
                         <Select
                             open={isSelectOpen}
                             onOpen={() => setIsSelectOpen(true)}
                             onClose={() => setIsSelectOpen(false)}
                             labelId='piece-select-label'
-                            label='Piece'
+                            label={intl.formatMessage({ id: 'piece' })}
                             value={piece}
                             onChange={handlePieceChange}
+                            required
                         >
                             {pieces.map((piece) => (
-                                <MenuItem key={piece.id} value={piece.titleEn} data-id={piece.id}>
-                                    {piece.titleEn}
+                                <MenuItem
+                                    key={piece.id}
+                                    value={intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn}
+                                    data-id={piece.id}
+                                >
+                                    {intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn}
                                 </MenuItem>
                             ))}
                             <Box sx={{ textAlign: 'center', mt: 1 }}>
                                 <Button onClick={handleCreatePiece} variant='outlined'>
-                                    Create Piece
+                                    {intl.formatMessage({ id: 'create_piece' })}
                                 </Button>
                             </Box>
                         </Select>
                     </FormControl>
 
-                    <TextField label='Title' required value={title} onChange={(e) => setTitle(e.target.value)} />
+                    <TextField
+                        label={intl.formatMessage({ id: 'review_title' })}
+                        required
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
                     <TextField
                         multiline
                         minRows={5}
-                        label='Text'
+                        label={intl.formatMessage({ id: 'review_text' })}
                         required
                         value={text}
                         onChange={(e) => setText(e.target.value)}
                     />
 
                     <Autocomplete
-                        renderInput={(params) => <TextField {...params} label={'Tags'} />}
+                        renderInput={(params) => (
+                            <TextField {...params} label={intl.formatMessage({ id: 'review_tags' })} />
+                        )}
                         multiple
                         disabled
                         options={['tag1', 'tag2']}
@@ -181,7 +194,9 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                     /> */}
 
                     <Box sx={{ mx: 'auto' }}>
-                        <Typography sx={{ textAlign: 'center', mb: 1 }}>Your Rating</Typography>
+                        <Typography sx={{ textAlign: 'center', mb: 1 }}>
+                            {intl.formatMessage({ id: 'review_rating' })}
+                        </Typography>
                         <Rating
                             size='large'
                             value={grade}
@@ -190,8 +205,12 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                         />
                     </Box>
 
-                    <Button type='submit' variant='contained'>
-                        Add
+                    <Button
+                        type='submit'
+                        variant='contained'
+                        disabled={!piece || !title.trim() || !text.trim() || !grade}
+                    >
+                        {intl.formatMessage({ id: 'review_add' })}
                     </Button>
                 </Box>
             </form>

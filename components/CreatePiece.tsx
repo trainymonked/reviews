@@ -12,6 +12,7 @@ import {
     Typography,
 } from '@mui/material'
 import { useSession } from 'next-auth/react'
+import { useIntl } from 'react-intl'
 
 type Props = {
     onCancel: () => void
@@ -28,6 +29,8 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
 
     const [pieceGroup, setPieceGroup] = useState('')
     const [pieceGroupHandle, setPieceGroupHandle] = useState('')
+
+    const intl = useIntl()
 
     useEffect(() => {
         setTitleEn('')
@@ -86,7 +89,7 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                 }}
             >
                 <Typography variant='h3' sx={{ textAlign: 'center', mt: 3 }}>
-                    Create a Piece
+                    {intl.formatMessage({ id: 'create_piece' })}
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
@@ -100,56 +103,63 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                         }}
                     >
                         <FormControl>
-                            <InputLabel id='piece-group-select-label'>Group</InputLabel>
+                            <InputLabel id='piece-group-select-label'>
+                                {intl.formatMessage({ id: 'piece_group' })}
+                            </InputLabel>
                             <Select
                                 labelId='piece-group-select-label'
-                                label='Group'
+                                label={intl.formatMessage({ id: 'piece_group' })}
                                 value={pieceGroup}
                                 onChange={onPieceGroupChange}
                             >
                                 {pieceGroups.map((pieceGroup) => (
                                     <MenuItem
                                         key={pieceGroup.id}
-                                        value={pieceGroup.nameEn}
+                                        value={intl.locale === 'en' ? pieceGroup.nameEn : pieceGroup.nameRu}
                                         data-handle={pieceGroup.handle}
                                     >
-                                        {pieceGroup.nameEn}
+                                        {intl.locale === 'en' ? pieceGroup.nameEn : pieceGroup.nameRu}
                                     </MenuItem>
                                 ))}
                             </Select>
                         </FormControl>
 
                         <TextField
-                            label='Title'
+                            label={intl.formatMessage({ id: 'piece_title' })}
                             required
                             value={titleEn}
                             onChange={(event) => setTitleEn(event.target.value)}
                         />
                         <TextField
                             multiline
-                            label='Description'
+                            label={intl.formatMessage({ id: 'piece_description' })}
                             required
                             value={descriptionEn}
                             onChange={(event) => setDescriptionEn(event.target.value)}
                         />
 
                         <TextField
-                            label='Title Rus (optional)'
+                            label={intl.formatMessage({ id: 'piece_title_ru' })}
                             value={titleRu}
                             onChange={(event) => setTitleRu(event.target.value)}
                         />
                         <TextField
                             multiline
-                            label='Decription Rus (optional)'
+                            label={intl.formatMessage({ id: 'piece_description_ru' })}
                             value={descriptionRu}
                             onChange={(event) => setDescriptionRu(event.target.value)}
                         />
 
-                        <Button variant='contained' color='success' type='submit'>
-                            Create
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            type='submit'
+                            disabled={!pieceGroup || !titleEn.trim() || !descriptionEn.trim()}
+                        >
+                            {intl.formatMessage({ id: 'create' })}
                         </Button>
-                        <Button variant='outlined' color='error' type='button' onClick={onCancel}>
-                            Cancel
+                        <Button variant='text' color='error' type='button' onClick={onCancel}>
+                            {intl.formatMessage({ id: 'cancel' })}
                         </Button>
                     </Box>
                 </form>

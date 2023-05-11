@@ -1,0 +1,224 @@
+{
+  "add_review": [
+    {
+      "type": 0,
+      "value": "Добавить обзор"
+    }
+  ],
+  "author": [
+    {
+      "type": 0,
+      "value": "Автор"
+    }
+  ],
+  "by": [
+    {
+      "type": 0,
+      "value": "от"
+    }
+  ],
+  "cancel": [
+    {
+      "type": 0,
+      "value": "Отмена"
+    }
+  ],
+  "comment(s)": [
+    {
+      "type": 0,
+      "value": "комментарий(-ев)"
+    }
+  ],
+  "comments": [
+    {
+      "type": 0,
+      "value": "Комментарии"
+    }
+  ],
+  "create": [
+    {
+      "type": 0,
+      "value": "Добавить"
+    }
+  ],
+  "create_piece": [
+    {
+      "type": 0,
+      "value": "Добавить произведение"
+    }
+  ],
+  "delete_review": [
+    {
+      "type": 0,
+      "value": "Удалить обзор"
+    }
+  ],
+  "latest_reviews": [
+    {
+      "type": 0,
+      "value": "Последние обзоры"
+    }
+  ],
+  "member_since": [
+    {
+      "type": 0,
+      "value": "На сайте с"
+    }
+  ],
+  "no_review_comments": [
+    {
+      "type": 0,
+      "value": "Не оставлял комментарии к обзорам"
+    }
+  ],
+  "no_reviews": [
+    {
+      "type": 0,
+      "value": "Не добавлял обзоры"
+    }
+  ],
+  "page.pieces.title": [
+    {
+      "type": 0,
+      "value": "Произведения"
+    }
+  ],
+  "page.reviews.title": [
+    {
+      "type": 0,
+      "value": "Обзоры"
+    }
+  ],
+  "page.users.title": [
+    {
+      "type": 0,
+      "value": "Пользователи"
+    }
+  ],
+  "pages.reviews_add.title": [
+    {
+      "type": 0,
+      "value": "Добавление обзора"
+    }
+  ],
+  "piece": [
+    {
+      "type": 0,
+      "value": "Произведение"
+    }
+  ],
+  "piece_description": [
+    {
+      "type": 0,
+      "value": "Описание"
+    }
+  ],
+  "piece_description_ru": [
+    {
+      "type": 0,
+      "value": "Описание на русском языке (необязательно)"
+    }
+  ],
+  "piece_group": [
+    {
+      "type": 0,
+      "value": "Тип произведения"
+    }
+  ],
+  "piece_title": [
+    {
+      "type": 0,
+      "value": "Название"
+    }
+  ],
+  "piece_title_ru": [
+    {
+      "type": 0,
+      "value": "Название на русском языке (необязательно)"
+    }
+  ],
+  "review(s)": [
+    {
+      "type": 0,
+      "value": "обзор(-ов)"
+    }
+  ],
+  "review_add": [
+    {
+      "type": 0,
+      "value": "Добавить"
+    }
+  ],
+  "review_rating": [
+    {
+      "type": 0,
+      "value": "Ваша оценка"
+    }
+  ],
+  "review_tags": [
+    {
+      "type": 0,
+      "value": "Теги"
+    }
+  ],
+  "review_text": [
+    {
+      "type": 0,
+      "value": "Текст"
+    }
+  ],
+  "review_title": [
+    {
+      "type": 0,
+      "value": "Название"
+    }
+  ],
+  "reviews": [
+    {
+      "type": 0,
+      "value": "Обзоры"
+    }
+  ],
+  "search_placeholder": [
+    {
+      "type": 0,
+      "value": "Поиск..."
+    }
+  ],
+  "show_full_review": [
+    {
+      "type": 0,
+      "value": "Показать полный обзор"
+    }
+  ],
+  "sign_in_to_like": [
+    {
+      "type": 0,
+      "value": "Авторизуйтесь, чтобы поставить лайк"
+    }
+  ],
+  "switch_language": [
+    {
+      "type": 0,
+      "value": "English"
+    }
+  ],
+  "unnamed_user": [
+    {
+      "type": 0,
+      "value": "Безымянный пользователь"
+    }
+  ],
+  "user_reviews": [
+    {
+      "type": 0,
+      "value": "Обзоры пользователей"
+    }
+  ],
+  "visit_piece_page": [
+    {
+      "type": 0,
+      "value": "Страница произведения"
+    }
+  ]
+}

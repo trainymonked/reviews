@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import Head from 'next/head'
 import { getServerSession } from 'next-auth'
 import { Box } from '@mui/material'
+import { useIntl } from 'react-intl'
 
 import prisma from '../../lib/prisma'
 import Layout from '../../components/Layout'
@@ -16,7 +17,10 @@ export async function getServerSideProps({ req, res }: { req: NextApiRequest, re
 
     return {
         props: {
-            pieces,
+            pieces: pieces.map(piece => ({
+                ...piece,
+                creationDate: Date.parse(piece.creationDate.toJSON()),
+            })),
             isAuthenticated: !!session,
         },
     }
@@ -28,10 +32,11 @@ type Props = {
 }
 
 const Pieces: FC<Props> = ({ pieces, isAuthenticated }) => {
+    const intl = useIntl()
     return (
         <Layout>
             <Head>
-                <title>Pieces</title>
+                <title>{intl.formatMessage({ id: 'page.pieces.title' })}</title>
             </Head>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {pieces.map((piece: IPiece) => (

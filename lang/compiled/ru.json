@@ -59,6 +59,18 @@
       "value": "Последние обзоры"
     }
   ],
+  "log_in": [
+    {
+      "type": 0,
+      "value": "Войти"
+    }
+  ],
+  "log_out": [
+    {
+      "type": 0,
+      "value": "Выйти"
+    }
+  ],
   "member_since": [
     {
       "type": 0,
@@ -75,6 +87,12 @@
     {
       "type": 0,
       "value": "Не добавлял обзоры"
+    }
+  ],
+  "not_authorized": [
+    {
+      "type": 0,
+      "value": "Вы не авторизованы"
     }
   ],
   "page.pieces.title": [
@@ -200,7 +218,7 @@
   "switch_language": [
     {
       "type": 0,
-      "value": "English"
+      "value": "Язык: Русский"
     }
   ],
   "unnamed_user": [

@@ -1,11 +1,24 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useIntl } from 'react-intl'
-import { Avatar, AppBar, Box, IconButton, Toolbar, Typography, alpha, styled, Button } from '@mui/material'
-import InputBase from '@mui/material/InputBase'
+import {
+    Avatar,
+    AppBar,
+    Box,
+    IconButton,
+    Toolbar,
+    Typography,
+    alpha,
+    styled,
+    Menu,
+    MenuItem,
+    Divider,
+    ListItemIcon,
+    InputBase,
+} from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import AccountCircle from '@mui/icons-material/AccountCircle'
+import { Logout, AccountCircle, KeyboardArrowDown, Language, Login } from '@mui/icons-material'
 
 import Link from './Link'
 
@@ -51,119 +64,157 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }))
 
 const Header: FC = () => {
-    const { data: session, status } = useSession()
+    const { data: session } = useSession()
 
     const { push, pathname, query, asPath } = useRouter()
     const intl = useIntl()
 
-    let rightContent: any
-
-    if (status === 'loading') {
-        rightContent = {
-            title: 'Loading...',
-            button: () => {},
-        }
-        // rightContent = <Typography>Validating session ...</Typography>
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const open = Boolean(anchorEl)
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget)
     }
-
-    if (!session) {
-        rightContent = {
-            title: 'Click to Log In',
-            button: () => push('/api/auth/signin'),
-        }
-        // rightContent = (
-        //     <Link href='/api/auth/signin'>
-        //         <Button variant='contained'>Log in</Button>
-        //     </Link>
-        // )
-    }
-
-    if (session) {
-        rightContent = {
-            title: `${session.user?.name} (${session.user?.email})\n\nClick to Log out`,
-            button: () => signOut(),
-        }
-        // rightContent = (
-        //     <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
-        //         <Typography>
-        //             {session.user?.name} ({session.user?.email})
-        //         </Typography>
-        //         <Button size='small' variant='contained' onClick={() => signOut()}>
-        //             Log out
-        //         </Button>
-        //     </Box>
-        // )
+    const handleClose = () => {
+        setAnchorEl(null)
     }
 
     return (
-        <AppBar position='static' color='inherit'>
-            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                    }}
-                >
-                    <Link href='/'>
-                        <Typography color='inherit'>{intl.formatMessage({ id: 'page.reviews.title' })}</Typography>
-                    </Link>
-                    <Link href='/users'>
-                        <Typography color='inherit'>{intl.formatMessage({ id: 'page.users.title' })}</Typography>
-                    </Link>
-                    <Link href='/pieces'>
-                        <Typography color='inherit'>{intl.formatMessage({ id: 'page.pieces.title' })}</Typography>
-                    </Link>
+        <>
+            <AppBar position='static' color='inherit'>
+                <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
+                        <Link href='/'>
+                            <Typography color='inherit'>{intl.formatMessage({ id: 'page.reviews.title' })}</Typography>
+                        </Link>
+                        <Link href='/users'>
+                            <Typography fontSize='small' color='inherit'>
+                                {intl.formatMessage({ id: 'page.users.title' })}
+                            </Typography>
+                        </Link>
+                        <Link href='/pieces'>
+                            <Typography fontSize='small' color='inherit'>
+                                {intl.formatMessage({ id: 'page.pieces.title' })}
+                            </Typography>
+                        </Link>
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                        {/* <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase placeholder={intl.formatMessage({ id: 'search_placeholder' })} />
+                        </Search> */}
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                py: 1.5,
+                                pl: 2.5,
+                                ':hover': { background: 'rgba(0, 0, 0, 0.15)' },
+                                cursor: 'pointer',
+                                alignItems: 'center',
+                            }}
+                            onClick={handleClick}
+                        >
+                            <IconButton disableRipple sx={{ width: '32px', height: '32px' }} color='inherit'>
+                                {session?.user?.image ? (
+                                    <Avatar src={session.user.image} variant='circular' />
+                                ) : (
+                                    <AccountCircle sx={{ width: '32px', height: '32px' }} />
+                                )}
+                            </IconButton>
+                            <IconButton disableRipple>
+                                <KeyboardArrowDown />
+                            </IconButton>
+                        </Box>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+            <Menu
+                anchorEl={anchorEl}
+                id='account-menu'
+                open={open}
+                onClose={handleClose}
+                PaperProps={{
+                    elevation: 4,
+                    sx: {
+                        overflow: 'visible',
+                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                        mt: 1,
+                        '& .MuiAvatar-root': {
+                            width: 28,
+                            height: 28,
+                            ml: -0.5,
+                            mr: 1.5,
+                        },
+                        '& .MuiSvgIcon-root': {
+                            width: 28,
+                            height: 28,
+                            ml: -0.5,
+                            mr: 1.5,
+                        },
+                        '& .MuiMenuItem-root:not(:last-of-type)': {
+                            my: 1,
+                        },
+                    },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+                <Box sx={{ display: 'flex', px: 2, py: 1, alignItems: 'center' }}>
+                    {session?.user?.image ? <Avatar src={session.user.image} variant='circular' /> : <AccountCircle />}
+                    <Typography>
+                        {session
+                            ? session?.user?.name || intl.formatMessage({ id: 'unnamed_user' })
+                            : intl.formatMessage({ id: 'not_authorized' })}
+                    </Typography>
                 </Box>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        gap: 2,
-                        alignItems: 'center',
+                <Divider />
+                <MenuItem
+                    onClick={async () => {
+                        const newLocale = intl.locale === 'en' ? 'ru' : 'en'
+                        if (session?.user) {
+                            const body = { preferredLocale: newLocale }
+                            await fetch('/api/locale/update', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(body),
+                            })
+                        }
+                        push({ pathname, query }, asPath, { locale: newLocale })
                     }}
                 >
-                    <Button
-                        onClick={async () => {
-                            const newLocale = intl.locale === 'en' ? 'ru' : 'en'
-                            if (session?.user) {
-                                const body = { preferredLocale: newLocale }
-                                await fetch('/api/locale/update', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(body),
-                                })
-                                push({ pathname, query }, asPath, { locale: newLocale })
-                            } else {
-                                push({ pathname, query }, asPath, { locale: newLocale })
-                            }
+                    <ListItemIcon>
+                        <Language />
+                    </ListItemIcon>
+                    {intl.formatMessage({ id: 'switch_language' })}
+                </MenuItem>
+                {session ? (
+                    <MenuItem
+                        onClick={() => {
+                            handleClose()
+                            signOut()
                         }}
-                        variant='outlined'
-                        size='small'
                     >
-                        {intl.formatMessage({ id: 'switch_language' })}
-                    </Button>
-                    <Search>
-                        <SearchIconWrapper>
-                            <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase placeholder={intl.formatMessage({ id: 'search_placeholder' })} />
-                    </Search>
-                    <IconButton
-                        sx={{ width: '32px', height: '32px' }}
-                        title={rightContent.title}
-                        onClick={rightContent.button}
-                        color='inherit'
+                        <ListItemIcon>
+                            <Logout />
+                        </ListItemIcon>
+                        {intl.formatMessage({ id: 'log_out' })}
+                    </MenuItem>
+                ) : (
+                    <MenuItem
+                        onClick={() => {
+                            handleClose()
+                            push('/api/auth/signin')
+                        }}
                     >
-                        {session?.user?.image ? (
-                            <Avatar src={session.user.image} variant='circular' />
-                        ) : (
-                            <AccountCircle />
-                        )}
-                    </IconButton>
-                    {/* {rightContent} */}
-                </Box>
-            </Toolbar>
-        </AppBar>
+                        <ListItemIcon>
+                            <Login />
+                        </ListItemIcon>
+                        {intl.formatMessage({ id: 'log_in' })}
+                    </MenuItem>
+                )}
+            </Menu>
+        </>
     )
 }
 

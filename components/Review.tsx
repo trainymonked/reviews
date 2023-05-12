@@ -3,8 +3,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useIntl } from 'react-intl'
 import { Box, Button, Rating, Typography } from '@mui/material'
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'
-import FavoriteIcon from '@mui/icons-material/Favorite'
+import { Favorite, FavoriteBorder } from '@mui/icons-material'
 
 import Link from './Link'
 
@@ -83,7 +82,7 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
 
     if (fullPage) {
         return (
-            <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column', mb: 2 }}>
+            <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
                 <Typography variant='h2'>{review.title}</Typography>
                 <Link href={`/pieces/${review.pieceId}`}>
                     {intl.formatMessage({ id: 'piece' })}:{' '}
@@ -115,8 +114,8 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                 >
                     <Rating
                         max={1}
-                        icon={<FavoriteIcon color='error' />}
-                        emptyIcon={<FavoriteBorderIcon />}
+                        icon={<Favorite color='error' />}
+                        emptyIcon={<FavoriteBorder />}
                         onChange={toggleLike}
                         disabled={!session?.user}
                         value={+liked || null}
@@ -181,8 +180,8 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
             >
                 <Rating
                     max={1}
-                    icon={<FavoriteIcon color='error' />}
-                    emptyIcon={<FavoriteBorderIcon />}
+                    icon={<Favorite color='error' />}
+                    emptyIcon={<FavoriteBorder />}
                     onChange={toggleLike}
                     disabled={!session?.user}
                     value={+liked || null}

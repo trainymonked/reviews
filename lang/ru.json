@@ -34,6 +34,9 @@
     "cancel": "Отмена",
     "delete_review": "Удалить обзор",
     "sign_in_to_like": "Авторизуйтесь, чтобы поставить лайк",
-    "switch_language": "English",
-    "latest_reviews": "Последние обзоры"
+    "switch_language": "Язык: Русский",
+    "latest_reviews": "Последние обзоры",
+    "log_out": "Выйти",
+    "log_in": "Войти",
+    "not_authorized": "Вы не авторизованы"
 }

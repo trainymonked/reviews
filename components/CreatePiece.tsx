@@ -82,10 +82,11 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
                     bgcolor: 'background.paper',
-                    width: 400,
                     boxShadow: 24,
                     outline: 'none',
                     px: 4,
+                    maxWidth: '40%',
+                    minWidth: '240px',
                 }}
             >
                 <Typography variant='h3' sx={{ textAlign: 'center', mt: 3 }}>

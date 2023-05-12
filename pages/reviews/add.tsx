@@ -41,7 +41,10 @@ export async function getServerSideProps({ req, res }: { req: NextApiRequest; re
 
     return {
         props: {
-            pieces: pieces,
+            pieces: pieces.map((piece) => ({
+                ...piece,
+                creationDate: Date.parse(piece.creationDate.toJSON()),
+            })),
             pieceGroups: pieceGroups,
         },
     }
@@ -121,7 +124,17 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
             </Typography>
 
             <form onSubmit={submitData}>
-                <Box sx={{ width: '40%', mx: 'auto', mt: 5, mb: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box
+                    sx={{
+                        maxWidth: '40%',
+                        minWidth: '240px',
+                        mx: 'auto',
+                        mt: 5,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                    }}
+                >
                     <FormControl>
                         <InputLabel id='piece-select-label'>{intl.formatMessage({ id: 'piece' })}</InputLabel>
                         <Select
@@ -198,7 +211,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                             {intl.formatMessage({ id: 'review_rating' })}
                         </Typography>
                         <Rating
-                            size='large'
+                            sx={{ maxWidth: '60%' }}
                             value={grade}
                             onChange={(event, value) => setGrade(value || grade)}
                             max={10}

@@ -59,6 +59,18 @@
       "value": "Latest reviews"
     }
   ],
+  "log_in": [
+    {
+      "type": 0,
+      "value": "Log in"
+    }
+  ],
+  "log_out": [
+    {
+      "type": 0,
+      "value": "Log out"
+    }
+  ],
   "member_since": [
     {
       "type": 0,
@@ -75,6 +87,12 @@
     {
       "type": 0,
       "value": "No reviews"
+    }
+  ],
+  "not_authorized": [
+    {
+      "type": 0,
+      "value": "Not authorized"
     }
   ],
   "page.pieces.title": [
@@ -200,7 +218,7 @@
   "switch_language": [
     {
       "type": 0,
-      "value": "Русский"
+      "value": "Language: English"
     }
   ],
   "unnamed_user": [

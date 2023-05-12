@@ -34,6 +34,9 @@
     "cancel": "Cancel",
     "delete_review": "Delete review",
     "sign_in_to_like": "Sign in to leave a like",
-    "switch_language": "Русский",
-    "latest_reviews": "Latest reviews"
+    "switch_language": "Language: English",
+    "latest_reviews": "Latest reviews",
+    "log_out": "Log out",
+    "log_in": "Log in",
+    "not_authorized": "Not authorized"
 }

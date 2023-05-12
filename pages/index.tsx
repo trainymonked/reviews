@@ -68,16 +68,13 @@ const Reviews: FC<Props> = ({ reviews, isAuthenticated }) => {
             <Head>
                 <title>{intl.formatMessage({ id: 'page.reviews.title' })}</title>
             </Head>
-            <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2, flexBasis: '50%' }}>
-                    <Typography variant='h5'>{intl.formatMessage({ id: 'latest_reviews' })}:</Typography>
-                    {reviews
-                        .sort((a, b) => b.creationDate - a.creationDate)
-                        .map((review) => (
-                            <Review review={review} key={review.id} noAuthor />
-                        ))}
-                </Box>
-                <Box sx={{ flexBasis: '40%' }}>tag cloud, etc</Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                <Typography variant='h5'>{intl.formatMessage({ id: 'latest_reviews' })}:</Typography>
+                {reviews
+                    .sort((a, b) => b.creationDate - a.creationDate)
+                    .map((review) => (
+                        <Review review={review} key={review.id} noAuthor />
+                    ))}
             </Box>
             {isAuthenticated && (
                 <Link href={'/reviews/add'}>

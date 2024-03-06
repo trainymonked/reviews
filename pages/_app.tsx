@@ -25,7 +25,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                 push({ pathname, query }, asPath, { locale: shortLocale })
             }
         })()
-    }, [locale, asPath, pathname, push, query, shortLocale])
+    }, [locale])
 
     const messages = useMemo(() => {
         switch (userLocale) {

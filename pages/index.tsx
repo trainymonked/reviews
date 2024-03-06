@@ -29,19 +29,24 @@ export async function getServerSideProps({ req, res }: { req: NextApiRequest; re
                 },
             },
             likes: true,
+            comments: true,
         },
     })
 
     return {
         props: {
-            reviews: reviews.map((review) => ({
+            reviews: reviews.map(review => ({
                 ...review,
                 author: {
                     ...review.author,
                     registrationDate: Date.parse(review.author.registrationDate.toJSON()),
-                    reviews: review.author.reviews.map((r) => ({
+                    reviews: review.author.reviews.map(r => ({
                         ...r,
                         creationDate: Date.parse(r.creationDate.toJSON()),
+                    })),
+                    reviewComments: review.author.reviewComments.map(rc => ({
+                        ...rc,
+                        creationDate: Date.parse(rc.creationDate.toJSON()),
                     })),
                 },
                 creationDate: Date.parse(review.creationDate.toJSON()),
@@ -49,6 +54,10 @@ export async function getServerSideProps({ req, res }: { req: NextApiRequest; re
                     ...review.piece,
                     creationDate: Date.parse(review.piece.creationDate.toJSON()),
                 },
+                comments: review.comments.map(c => ({
+                    ...c,
+                    creationDate: Date.parse(c.creationDate.toJSON()),
+                })),
             })),
             isAuthenticated: !!session,
         },
@@ -72,8 +81,12 @@ const Reviews: FC<Props> = ({ reviews, isAuthenticated }) => {
                 <Typography variant='h5'>{intl.formatMessage({ id: 'latest_reviews' })}:</Typography>
                 {reviews
                     .sort((a, b) => b.creationDate - a.creationDate)
-                    .map((review) => (
-                        <Review review={review} key={review.id} noAuthor />
+                    .map(review => (
+                        <Review
+                            review={review}
+                            key={review.id}
+                            noAuthor
+                        />
                     ))}
             </Box>
             {isAuthenticated && (

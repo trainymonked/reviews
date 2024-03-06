@@ -41,7 +41,7 @@ export async function getServerSideProps({ req, res }: { req: NextApiRequest; re
 
     return {
         props: {
-            pieces: pieces.map((piece) => ({
+            pieces: pieces.map(piece => ({
                 ...piece,
                 creationDate: Date.parse(piece.creationDate.toJSON()),
             })),
@@ -73,10 +73,12 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
 
     useEffect(() => {
         const pId = pieceId || searchParams.get('pieceId') || ''
-        setPieceId(pId)
-        const piece = pieces.find((piece) => piece.id === pId)
-        setPiece(piece ? (intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn) : '')
-    }, [searchParams, intl.locale])
+        if (pId !== pieceId) {
+            setPieceId(pId)
+            const piece = pieces.find(piece => piece.id === pId)
+            setPiece(piece ? (intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn) : '')
+        }
+    }, [searchParams, intl.locale, pieces, pieceId])
 
     const submitData = async (e: SyntheticEvent) => {
         e.preventDefault()
@@ -119,7 +121,10 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                 <title>{intl.formatMessage({ id: 'pages.reviews_add.title' })}</title>
             </Head>
 
-            <Typography variant='h2' sx={{ textAlign: 'center', mt: 5 }}>
+            <Typography
+                variant='h2'
+                sx={{ textAlign: 'center', mt: 5 }}
+            >
                 {intl.formatMessage({ id: 'add_review' })}
             </Typography>
 
@@ -147,7 +152,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                             onChange={handlePieceChange}
                             required
                         >
-                            {pieces.map((piece) => (
+                            {pieces.map(piece => (
                                 <MenuItem
                                     key={piece.id}
                                     value={intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn}
@@ -157,7 +162,10 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                                 </MenuItem>
                             ))}
                             <Box sx={{ textAlign: 'center', mt: 1 }}>
-                                <Button onClick={handleCreatePiece} variant='outlined'>
+                                <Button
+                                    onClick={handleCreatePiece}
+                                    variant='outlined'
+                                >
                                     {intl.formatMessage({ id: 'create_piece' })}
                                 </Button>
                             </Box>
@@ -168,7 +176,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                         label={intl.formatMessage({ id: 'review_title' })}
                         required
                         value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={e => setTitle(e.target.value)}
                     />
                     <TextField
                         multiline
@@ -176,12 +184,15 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                         label={intl.formatMessage({ id: 'review_text' })}
                         required
                         value={text}
-                        onChange={(e) => setText(e.target.value)}
+                        onChange={e => setText(e.target.value)}
                     />
 
                     <Autocomplete
-                        renderInput={(params) => (
-                            <TextField {...params} label={intl.formatMessage({ id: 'review_tags' })} />
+                        renderInput={params => (
+                            <TextField
+                                {...params}
+                                label={intl.formatMessage({ id: 'review_tags' })}
+                            />
                         )}
                         multiple
                         disabled
@@ -232,7 +243,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                 pieceGroups={pieceGroups}
                 shown={isModalOpen}
                 onCancel={() => setIsModalOpen(false)}
-                onCreate={(pieceId) => {
+                onCreate={pieceId => {
                     setIsModalOpen(false)
                     push(`/reviews/add?pieceId=${pieceId}`)
                 }}

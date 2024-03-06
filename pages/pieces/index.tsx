@@ -10,7 +10,7 @@ import Layout from '../../components/Layout'
 import Piece, { IPiece } from '../../components/Piece'
 import { authOptions } from '../api/auth/[...nextauth]'
 
-export async function getServerSideProps({ req, res }: { req: NextApiRequest, res: NextApiResponse }) {
+export async function getServerSideProps({ req, res }: { req: NextApiRequest; res: NextApiResponse }) {
     const session = await getServerSession(req, res, authOptions)
 
     const pieces = await prisma.piece.findMany({ include: { group: true } })
@@ -40,7 +40,11 @@ const Pieces: FC<Props> = ({ pieces, isAuthenticated }) => {
             </Head>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {pieces.map((piece: IPiece) => (
-                    <Piece piece={piece} key={piece.id} isAuthenticated={isAuthenticated} />
+                    <Piece
+                        piece={piece}
+                        key={piece.id}
+                        isAuthenticated={isAuthenticated}
+                    />
                 ))}
             </Box>
         </Layout>

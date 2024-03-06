@@ -40,7 +40,10 @@ const NextLinkComposed = React.forwardRef<HTMLAnchorElement, NextLinkComposedPro
             legacyBehavior={legacyBehavior}
             locale={locale}
         >
-            <Anchor ref={ref} {...other} />
+            <Anchor
+                ref={ref}
+                {...other}
+            />
         </NextLink>
     )
 })
@@ -93,10 +96,25 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props:
 
     if (isExternal) {
         if (noLinkStyle) {
-            return <Anchor className={className} href={href} ref={ref} {...other} />
+            return (
+                <Anchor
+                    className={className}
+                    href={href}
+                    ref={ref}
+                    {...other}
+                />
+            )
         }
 
-        return <MuiLink className={className} href={href} ref={ref} underline={underline} {...other} />
+        return (
+            <MuiLink
+                className={className}
+                href={href}
+                ref={ref}
+                underline={underline}
+                {...other}
+            />
+        )
     }
 
     const linkAs = linkAsProp || as
@@ -112,7 +130,14 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(function Link(props:
     }
 
     if (noLinkStyle) {
-        return <NextLinkComposed className={className} ref={ref} {...nextjsProps} {...other} />
+        return (
+            <NextLinkComposed
+                className={className}
+                ref={ref}
+                {...nextjsProps}
+                {...other}
+            />
+        )
     }
 
     return (

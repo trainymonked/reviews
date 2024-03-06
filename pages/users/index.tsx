@@ -21,7 +21,7 @@ export async function getServerSideProps() {
 
     return {
         props: {
-            users: users.map((u) => {
+            users: users.map(u => {
                 const { email, ...user } = u
                 return {
                     ...user,
@@ -34,7 +34,16 @@ export async function getServerSideProps() {
 }
 
 type Props = {
-    users: any[]
+    users: {
+        registrationDate: number
+        id: string
+        image: string
+        name: string
+        _count: {
+            reviews: number
+            reviewComments: number
+        }
+    }[]
 }
 
 const UsersPage: FC<Props> = ({ users }) => {
@@ -46,7 +55,7 @@ const UsersPage: FC<Props> = ({ users }) => {
                 <title>{intl.formatMessage({ id: 'page.users.title' })}</title>
             </Head>
             <Box sx={{ maxWidth: '900px', mx: 'auto', my: 5, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                {users.map((user) => {
+                {users.map(user => {
                     return (
                         <Box
                             sx={{
@@ -62,10 +71,16 @@ const UsersPage: FC<Props> = ({ users }) => {
                         >
                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                 <Link href={`/users/${user.id}`}>
-                                    <Avatar src={user.image} sx={{ width: 64, height: 64 }} />
+                                    <Avatar
+                                        src={user.image}
+                                        sx={{ width: 64, height: 64 }}
+                                    />
                                 </Link>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                    <Link underline='hover' href={`/users/${user.id}`}>
+                                    <Link
+                                        underline='hover'
+                                        href={`/users/${user.id}`}
+                                    >
                                         {user.name || intl.formatMessage({ id: 'unnamed_user' })}
                                     </Link>
                                     <Typography>
@@ -76,10 +91,10 @@ const UsersPage: FC<Props> = ({ users }) => {
                             </Box>
                             <Box>
                                 <Typography>
-                                    {user._count.reviews} {intl.formatMessage({ id: 'review(s)' })}
+                                    {intl.formatMessage({ id: 'review(s)' })}: {user._count.reviews}
                                 </Typography>
                                 <Typography>
-                                    {user._count.reviewComments} {intl.formatMessage({ id: 'comment(s)' })}
+                                    {intl.formatMessage({ id: 'comment(s)' })}: {user._count.reviewComments}
                                 </Typography>
                             </Box>
                         </Box>

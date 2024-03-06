@@ -1,4 +1,10 @@
 {
+  "add_comment": [
+    {
+      "type": 0,
+      "value": "Leave a Comment"
+    }
+  ],
   "add_review": [
     {
       "type": 0,
@@ -26,7 +32,25 @@
   "comment(s)": [
     {
       "type": 0,
-      "value": "comment(s)"
+      "value": "Comments"
+    }
+  ],
+  "comment_add": [
+    {
+      "type": 0,
+      "value": "Add"
+    }
+  ],
+  "comment_for": [
+    {
+      "type": 0,
+      "value": "For review"
+    }
+  ],
+  "comment_text": [
+    {
+      "type": 0,
+      "value": "Text"
     }
   ],
   "comments": [
@@ -47,6 +71,12 @@
       "value": "Create a Piece"
     }
   ],
+  "date_at": [
+    {
+      "type": 0,
+      "value": "at"
+    }
+  ],
   "delete_review": [
     {
       "type": 0,
@@ -57,6 +87,12 @@
     {
       "type": 0,
       "value": "Latest reviews"
+    }
+  ],
+  "leave_comment": [
+    {
+      "type": 0,
+      "value": "Leave a comment"
     }
   ],
   "log_in": [
@@ -77,6 +113,18 @@
       "value": "Member since"
     }
   ],
+  "my_profile": [
+    {
+      "type": 0,
+      "value": "My profile"
+    }
+  ],
+  "no_comments_review": [
+    {
+      "type": 0,
+      "value": "No comments"
+    }
+  ],
   "no_review_comments": [
     {
       "type": 0,
@@ -84,6 +132,12 @@
     }
   ],
   "no_reviews": [
+    {
+      "type": 0,
+      "value": "No reviews"
+    }
+  ],
+  "no_reviews_piece": [
     {
       "type": 0,
       "value": "No reviews"
@@ -111,6 +165,12 @@
     {
       "type": 0,
       "value": "Users"
+    }
+  ],
+  "pages.comments_add.title": [
+    {
+      "type": 0,
+      "value": "Leave a Comment"
     }
   ],
   "pages.reviews_add.title": [
@@ -158,7 +218,7 @@
   "review(s)": [
     {
       "type": 0,
-      "value": "review(s)"
+      "value": "Reviews"
     }
   ],
   "review_add": [
@@ -207,6 +267,12 @@
     {
       "type": 0,
       "value": "Show full review"
+    }
+  ],
+  "sign_in_to_comment": [
+    {
+      "type": 0,
+      "value": "Sign in to leave a comment"
     }
   ],
   "sign_in_to_like": [

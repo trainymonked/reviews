@@ -1,13 +1,10 @@
 {
-  "extends": "next/core-web-vitals",
-  "rules": {
-    "consistent-return": 2,
-    "indent": [
-      1,
-      4
-    ],
-    "no-else-return": 1,
-    "semi": "off",
-    "space-unary-ops": 2
-  }
+    "extends": "next/core-web-vitals",
+    "rules": {
+        "consistent-return": 2,
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "no-else-return": 1,
+        "semi": "off",
+        "space-unary-ops": 2
+    }
 }

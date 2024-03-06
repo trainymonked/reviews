@@ -5,8 +5,8 @@
     "search_placeholder": "Search...",
     "add_review": "Add a Review",
     "member_since": "Member since",
-    "review(s)": "review(s)",
-    "comment(s)": "comment(s)",
+    "review(s)": "Reviews",
+    "comment(s)": "Comments",
     "unnamed_user": "Unnamed user",
     "reviews": "Reviews",
     "no_reviews": "No reviews",
@@ -38,5 +38,16 @@
     "latest_reviews": "Latest reviews",
     "log_out": "Log out",
     "log_in": "Log in",
-    "not_authorized": "Not authorized"
+    "not_authorized": "Not authorized",
+    "my_profile": "My profile",
+    "sign_in_to_comment": "Sign in to leave a comment",
+    "no_reviews_piece": "No reviews",
+    "no_comments_review": "No comments",
+    "leave_comment": "Leave a comment",
+    "comment_for": "For review",
+    "date_at": "at",
+    "add_comment": "Leave a Comment",
+    "comment_text": "Text",
+    "comment_add": "Add",
+    "pages.comments_add.title": "Leave a Comment"
 }

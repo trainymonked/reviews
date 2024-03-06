@@ -40,16 +40,25 @@ const Piece: FC<Props> = ({ piece, fullPage = false, isAuthenticated }) => {
                     {intl.locale === 'en' ? piece.descriptionEn : piece.descriptionRu || piece.descriptionEn}
                 </Typography>
 
-                {piece.reviews && (
-                    <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
-                        <Typography variant='h6' mt={1}>
-                            {intl.formatMessage({ id: 'user_reviews' })}
-                        </Typography>
-                        {piece.reviews.map((review: IReview) => (
-                            <Review review={review} key={review.id} noPiece />
-                        ))}
-                    </Box>
-                )}
+                <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
+                    <Typography
+                        variant='h6'
+                        mt={1}
+                    >
+                        {intl.formatMessage({ id: 'user_reviews' })}
+                    </Typography>
+                    {piece.reviews.length ? (
+                        piece.reviews.map((review: IReview) => (
+                            <Review
+                                review={review}
+                                key={review.id}
+                                noPiece
+                            />
+                        ))
+                    ) : (
+                        <Typography>{intl.formatMessage({ id: 'no_reviews_piece' })}</Typography>
+                    )}
+                </Box>
 
                 {isAuthenticated && (
                     <Link href={`/reviews/add?pieceId=${piece.id}`}>

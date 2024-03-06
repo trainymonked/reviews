@@ -3,6 +3,7 @@ import { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import { SessionProvider, getSession } from 'next-auth/react'
 import { IntlProvider } from 'react-intl'
+import { Session } from 'next-auth'
 
 import English from '../lang/compiled/en.json'
 import Russian from '../lang/compiled/ru.json'
@@ -14,9 +15,9 @@ const App = ({ Component, pageProps }: AppProps) => {
 
     useEffect(() => {
         ;(async () => {
-            const session: any = await getSession()
+            const session: Session | null = await getSession()
             if (session) {
-                const preferredLocale = session?.user?.preferredLocale
+                const preferredLocale = session.user.preferredLocale || 'en'
                 setUserLocale(preferredLocale)
                 push({ pathname, query }, asPath, { locale: preferredLocale })
             } else {
@@ -24,7 +25,7 @@ const App = ({ Component, pageProps }: AppProps) => {
                 push({ pathname, query }, asPath, { locale: shortLocale })
             }
         })()
-    }, [locale])
+    }, [locale, asPath, pathname, push, query, shortLocale])
 
     const messages = useMemo(() => {
         switch (userLocale) {
@@ -41,7 +42,8 @@ const App = ({ Component, pageProps }: AppProps) => {
         <SessionProvider session={pageProps.session}>
             <IntlProvider
                 locale={userLocale}
-                messages={messages}>
+                messages={messages}
+            >
                 <Component {...pageProps} />
             </IntlProvider>
         </SessionProvider>

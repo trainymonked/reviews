@@ -13,6 +13,7 @@ import {
 } from '@mui/material'
 import { useSession } from 'next-auth/react'
 import { useIntl } from 'react-intl'
+import { Session } from 'next-auth'
 
 type Props = {
     onCancel: () => void
@@ -41,7 +42,7 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
         setPieceGroupHandle('')
     }, [shown])
 
-    const session: { data: any } = useSession()
+    const session: { data: Session | null } = useSession()
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault()
@@ -51,8 +52,8 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
             descriptionEn,
             titleRu,
             descriptionRu,
-            groupId: pieceGroups.find((g) => g.handle === pieceGroupHandle).id,
-            authorId: session.data?.user?.id,
+            groupId: pieceGroups.find(g => g.handle === pieceGroupHandle).id,
+            authorId: session.data?.user.id,
         }
 
         try {
@@ -77,7 +78,7 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
         <Modal open={shown}>
             <Box
                 sx={{
-                    position: 'absolute' as 'absolute',
+                    position: 'absolute',
                     top: '50%',
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
@@ -89,7 +90,10 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                     minWidth: '240px',
                 }}
             >
-                <Typography variant='h3' sx={{ textAlign: 'center', mt: 3 }}>
+                <Typography
+                    variant='h3'
+                    sx={{ textAlign: 'center', mt: 3 }}
+                >
                     {intl.formatMessage({ id: 'create_piece' })}
                 </Typography>
 
@@ -113,7 +117,7 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                                 value={pieceGroup}
                                 onChange={onPieceGroupChange}
                             >
-                                {pieceGroups.map((pieceGroup) => (
+                                {pieceGroups.map(pieceGroup => (
                                     <MenuItem
                                         key={pieceGroup.id}
                                         value={intl.locale === 'en' ? pieceGroup.nameEn : pieceGroup.nameRu}
@@ -129,26 +133,26 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                             label={intl.formatMessage({ id: 'piece_title' })}
                             required
                             value={titleEn}
-                            onChange={(event) => setTitleEn(event.target.value)}
+                            onChange={event => setTitleEn(event.target.value)}
                         />
                         <TextField
                             multiline
                             label={intl.formatMessage({ id: 'piece_description' })}
                             required
                             value={descriptionEn}
-                            onChange={(event) => setDescriptionEn(event.target.value)}
+                            onChange={event => setDescriptionEn(event.target.value)}
                         />
 
                         <TextField
                             label={intl.formatMessage({ id: 'piece_title_ru' })}
                             value={titleRu}
-                            onChange={(event) => setTitleRu(event.target.value)}
+                            onChange={event => setTitleRu(event.target.value)}
                         />
                         <TextField
                             multiline
                             label={intl.formatMessage({ id: 'piece_description_ru' })}
                             value={descriptionRu}
-                            onChange={(event) => setDescriptionRu(event.target.value)}
+                            onChange={event => setDescriptionRu(event.target.value)}
                         />
 
                         <Button
@@ -159,7 +163,12 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                         >
                             {intl.formatMessage({ id: 'create' })}
                         </Button>
-                        <Button variant='text' color='error' type='button' onClick={onCancel}>
+                        <Button
+                            variant='text'
+                            color='error'
+                            type='button'
+                            onClick={onCancel}
+                        >
                             {intl.formatMessage({ id: 'cancel' })}
                         </Button>
                     </Box>

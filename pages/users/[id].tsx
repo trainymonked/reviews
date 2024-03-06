@@ -35,9 +35,10 @@ export async function getServerSideProps({ params }: ParamsProps) {
                         },
                     },
                     likes: true,
+                    comments: true,
                 },
             },
-            reviewComments: { include: { review: true } },
+            reviewComments: { include: { review: true, author: true } },
         },
     })
 
@@ -53,21 +54,41 @@ export async function getServerSideProps({ params }: ParamsProps) {
                 ...user,
                 registrationDate: Date.parse(user.registrationDate.toJSON()),
                 emailVerified: user.emailVerified ? Date.parse(user.emailVerified.toJSON()) : null,
-                reviews: user.reviews.map((review: any) => ({
+                reviews: user.reviews.map((review: IReview) => ({
                     ...review,
                     author: {
                         ...review.author,
                         registrationDate: Date.parse(review.author.registrationDate.toJSON()),
-                        reviews: review.author.reviews.map((r: any) => ({
+                        reviews: review.author.reviews.map((r: { creationDate: any }) => ({
                             ...r,
                             creationDate: Date.parse(r.creationDate.toJSON()),
+                        })),
+                        reviewComments: review.author.reviewComments.map((rc: { creationDate: any }) => ({
+                            ...rc,
+                            creationDate: Date.parse(rc.creationDate.toJSON()),
                         })),
                     },
                     piece: {
                         ...review.piece,
                         creationDate: Date.parse(review.piece.creationDate.toJSON()),
                     },
+                    comments: review.comments.map((c: { creationDate: any }) => ({
+                        ...c,
+                        creationDate: Date.parse(c.creationDate.toJSON()),
+                    })),
                     creationDate: Date.parse(review.creationDate.toJSON()),
+                })),
+                reviewComments: user.reviewComments.map((rc: { creationDate: any; review: IReview; author: any }) => ({
+                    ...rc,
+                    creationDate: Date.parse(rc.creationDate.toJSON()),
+                    review: {
+                        ...rc.review,
+                        creationDate: Date.parse(rc.review.creationDate.toJSON()),
+                    },
+                    author: {
+                        ...rc.author,
+                        registrationDate: Date.parse(rc.author.registrationDate.toJSON()),
+                    },
                 })),
             },
         },
@@ -75,7 +96,14 @@ export async function getServerSideProps({ params }: ParamsProps) {
 }
 
 type Props = {
-    user: any
+    user: {
+        image: string
+        name: string
+        registrationDate: number
+        bio: string
+        reviews: IReview[]
+        reviewComments: IReviewComment[]
+    }
 }
 
 const UserPage: FC<Props> = ({ user: { image, name, registrationDate, bio, reviews, reviewComments } }) => {
@@ -89,7 +117,10 @@ const UserPage: FC<Props> = ({ user: { image, name, registrationDate, bio, revie
 
             <Box sx={{ maxWidth: '800px', mx: 'auto', my: 5 }}>
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                    <Avatar src={image} sx={{ width: 64, height: 64 }} />
+                    <Avatar
+                        src={image}
+                        sx={{ width: 64, height: 64 }}
+                    />
                     <Typography>{name || intl.formatMessage({ id: 'unnamed_user' })}</Typography>
                 </Box>
                 <Typography mt={2}>
@@ -102,12 +133,19 @@ const UserPage: FC<Props> = ({ user: { image, name, registrationDate, bio, revie
                 <Box sx={{ my: 2 }}>
                     {reviews.length > 0 ? (
                         <>
-                            <Typography variant='h6' mb={2}>
+                            <Typography
+                                variant='h6'
+                                mb={2}
+                            >
                                 {intl.formatMessage({ id: 'reviews' })}:
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
                                 {reviews.map((review: IReview) => (
-                                    <Review key={review.id} review={review} noAuthor />
+                                    <Review
+                                        key={review.id}
+                                        review={review}
+                                        noAuthor
+                                    />
                                 ))}
                             </Box>
                         </>
@@ -119,12 +157,20 @@ const UserPage: FC<Props> = ({ user: { image, name, registrationDate, bio, revie
                 <Box sx={{ my: 2 }}>
                     {reviewComments.length > 0 ? (
                         <>
-                            <Typography variant='h6' mb={2}>
+                            <Typography
+                                variant='h6'
+                                mb={2}
+                            >
                                 {intl.formatMessage({ id: 'comments' })}:
                             </Typography>
-                            {reviewComments.map((reviewComment: IReviewComment) => (
-                                <ReviewComment key={reviewComment.id} />
-                            ))}
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                {reviewComments.map((reviewComment: IReviewComment) => (
+                                    <ReviewComment
+                                        key={reviewComment.id}
+                                        comment={reviewComment}
+                                    />
+                                ))}
+                            </Box>
                         </>
                     ) : (
                         <Typography>{intl.formatMessage({ id: 'no_review_comments' })}</Typography>

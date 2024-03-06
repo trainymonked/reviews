@@ -5,8 +5,8 @@
     "search_placeholder": "Поиск...",
     "add_review": "Добавить обзор",
     "member_since": "На сайте с",
-    "review(s)": "обзор(-ов)",
-    "comment(s)": "комментарий(-ев)",
+    "review(s)": "Обзоры",
+    "comment(s)": "Комментарии",
     "unnamed_user": "Безымянный пользователь",
     "reviews": "Обзоры",
     "no_reviews": "Не добавлял обзоры",
@@ -38,5 +38,16 @@
     "latest_reviews": "Последние обзоры",
     "log_out": "Выйти",
     "log_in": "Войти",
-    "not_authorized": "Вы не авторизованы"
+    "not_authorized": "Вы не авторизованы",
+    "my_profile": "Мой профиль",
+    "sign_in_to_comment": "Авторизуйтесь, чтобы оставить комментарий",
+    "no_reviews_piece": "Обзоры отсутствуют",
+    "no_comments_review": "Комментарии отсутствуют",
+    "leave_comment": "Оставить комментарий",
+    "comment_for": "К обзору",
+    "date_at": "",
+    "add_comment": "Добавление комментария",
+    "comment_text": "Текст",
+    "comment_add": "Добавить",
+    "pages.comments_add.title": "Добавление комментария"
 }

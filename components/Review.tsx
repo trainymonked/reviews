@@ -1,11 +1,13 @@
 import { FC, SyntheticEvent, Key, useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { Session } from 'next-auth'
 import { useIntl } from 'react-intl'
 import { Box, Button, Rating, Typography } from '@mui/material'
-import { Favorite, FavoriteBorder } from '@mui/icons-material'
+import { Favorite, FavoriteBorder, Comment } from '@mui/icons-material'
 
 import Link from './Link'
+import ReviewComment, { IReviewComment } from './ReviewComment'
 
 export interface IReview {
     id: Key
@@ -18,8 +20,8 @@ export interface IReview {
     pieceId: Key
     author: any
     authorId: Key
-    creationDate: number
-    comments: any[]
+    creationDate: any
+    comments: IReviewComment[]
     likes: any[]
 }
 
@@ -28,18 +30,19 @@ type Props = {
     fullPage?: boolean
     noPiece?: boolean
     noAuthor?: boolean
+    isAuthenticated?: boolean
 }
 
-const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor = false }) => {
-    const { data: session }: { data: any } = useSession()
+const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor = false, isAuthenticated }) => {
+    const { data: session }: { data: Session | null } = useSession()
     const [liked, setLiked] = useState(false)
 
     const { push } = useRouter()
     const intl = useIntl()
 
     useEffect(() => {
-        setLiked(!!review.likes.find((like) => like.liked && like.authorId === session?.user?.id))
-    }, [session?.user?.id])
+        setLiked(!!review.likes.find(like => like.liked && like.authorId === session?.user.id))
+    }, [session?.user.id, review.likes])
 
     const deleteReview = async (e: SyntheticEvent) => {
         e.preventDefault()
@@ -67,14 +70,14 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
             })
             const data = await res.json()
             setLiked(data.liked)
-            review.likes = review.likes.map((like) => {
-                if (like.authorId === session?.user?.id) {
+            review.likes = review.likes.map(like => {
+                if (like.authorId === session.user.id) {
                     return data
                 }
                 return like
             })
 
-            if (!review.likes.find((like) => like.id === data.id)) {
+            if (!review.likes.find(like => like.id === data.id)) {
                 review.likes = review.likes.concat(data)
             }
         }
@@ -93,7 +96,11 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                 </Link>
 
                 <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                    <Rating value={1} max={1} readOnly />
+                    <Rating
+                        value={1}
+                        max={1}
+                        readOnly
+                    />
                     <Typography>{review.grade}/10</Typography>
                 </Box>
 
@@ -120,12 +127,53 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                         disabled={!session?.user}
                         value={+liked || null}
                     />
-                    <Typography>{review.likes.filter((like) => like.liked).length}</Typography>
+                    <Typography>{review.likes.filter(like => like.liked).length}</Typography>
                 </Box>
 
-                {session?.user?.id === review.authorId && (
+                <Box
+                    id='comments'
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 1,
+                        marginTop: 4,
+                    }}
+                >
+                    <Typography variant='h5'>{intl.formatMessage({ id: 'comments' })}</Typography>
+
+                    {isAuthenticated && (
+                        <Link href={`/comments/add?reviewId=${review.id}`}>
+                            <Button
+                                variant='contained'
+                                size='small'
+                                color='info'
+                                sx={{ alignSelf: 'flex-start' }}
+                            >
+                                {intl.formatMessage({ id: 'leave_comment' })}
+                            </Button>
+                        </Link>
+                    )}
+
+                    {review.comments.length ? (
+                        review.comments.map((comment: IReviewComment) => (
+                            <ReviewComment
+                                key={comment.id}
+                                comment={comment}
+                                noReview
+                            />
+                        ))
+                    ) : (
+                        <Typography>{intl.formatMessage({ id: 'no_comments_review' })}</Typography>
+                    )}
+                </Box>
+
+                {session?.user.id === review.authorId && (
                     <Box sx={{ mx: 'auto' }}>
-                        <Button variant='contained' color='error' onClick={deleteReview}>
+                        <Button
+                            variant='contained'
+                            color='error'
+                            onClick={deleteReview}
+                        >
                             {intl.formatMessage({ id: 'delete_review' })}
                         </Button>
                     </Box>
@@ -169,26 +217,57 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                 sx={{
                     display: 'flex',
                     gap: 1,
-                    background: 'rgba(99, 99, 99, 0.1)',
-                    borderRadius: '4px',
-                    width: 'min-content',
-                    py: 0.5,
-                    px: 1,
-                    userSelect: 'none',
                 }}
-                title={!session?.user ? intl.formatMessage({ id: 'sign_in_to_like' }) : undefined}
             >
-                <Rating
-                    max={1}
-                    icon={<Favorite color='error' />}
-                    emptyIcon={<FavoriteBorder />}
-                    onChange={toggleLike}
-                    disabled={!session?.user}
-                    value={+liked || null}
-                />
-                <Typography>{review.likes.filter((like) => like.liked).length}</Typography>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        gap: 1,
+                        background: 'rgba(99, 99, 99, 0.1)',
+                        borderRadius: '4px',
+                        width: 'min-content',
+                        py: 0.5,
+                        px: 1,
+                        userSelect: 'none',
+                    }}
+                    title={!session?.user ? intl.formatMessage({ id: 'sign_in_to_like' }) : undefined}
+                >
+                    <Rating
+                        max={1}
+                        icon={<Favorite color='error' />}
+                        emptyIcon={<FavoriteBorder />}
+                        onChange={toggleLike}
+                        disabled={!session?.user}
+                        value={+liked || null}
+                    />
+                    <Typography>{review.likes.filter(like => like.liked).length}</Typography>
+                </Box>
 
-                {/* <IconButton>... dots</IconButton> */}
+                <Box
+                    sx={{
+                        cursor: 'pointer',
+                        display: 'flex',
+                        gap: 1,
+                        background: 'rgba(99, 99, 99, 0.1)',
+                        borderRadius: '4px',
+                        width: 'min-content',
+                        py: 0.5,
+                        px: 1,
+                        userSelect: 'none',
+                    }}
+                    onClick={() => {
+                        push(`/reviews/${review.id}/#comments`)
+                    }}
+                >
+                    <Rating
+                        max={1}
+                        icon={<Comment color='primary' />}
+                        emptyIcon={<Comment />}
+                        disabled={true}
+                        value={null}
+                    />
+                    <Typography>{review.comments.length}</Typography>
+                </Box>
             </Box>
         </Box>
     )

@@ -18,7 +18,7 @@ import {
     InputBase,
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import { Logout, AccountCircle, KeyboardArrowDown, Language, Login } from '@mui/icons-material'
+import { Logout, AccountCircle, KeyboardArrowDown, Language, Login, Person } from '@mui/icons-material'
 
 import Link from './Link'
 
@@ -82,7 +82,7 @@ const Header: FC = () => {
 
     useEffect(() => {
         const getStatus = async () => {
-            if (!session?.user?.image) {
+            if (!session?.user.image) {
                 return setUserAvatar(null)
             }
             const res = await fetch(session.user.image || '', {
@@ -94,13 +94,14 @@ const Header: FC = () => {
             return setUserAvatar(session.user.image)
         }
         getStatus()
-    }, [session?.user?.image])
+    }, [session?.user.image])
 
     return (
         <>
             <AppBar
                 position='static'
-                color='inherit'>
+                color='inherit'
+            >
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
                         <Link href='/'>
@@ -109,14 +110,16 @@ const Header: FC = () => {
                         <Link href='/users'>
                             <Typography
                                 fontSize='small'
-                                color='inherit'>
+                                color='inherit'
+                            >
                                 {intl.formatMessage({ id: 'page.users.title' })}
                             </Typography>
                         </Link>
                         <Link href='/pieces'>
                             <Typography
                                 fontSize='small'
-                                color='inherit'>
+                                color='inherit'
+                            >
                                 {intl.formatMessage({ id: 'page.pieces.title' })}
                             </Typography>
                         </Link>
@@ -126,7 +129,10 @@ const Header: FC = () => {
                             <SearchIconWrapper>
                                 <SearchIcon />
                             </SearchIconWrapper>
-                            <StyledInputBase placeholder={intl.formatMessage({ id: 'search_placeholder' })} />
+                            <StyledInputBase
+                                id='global-search-input'
+                                placeholder={intl.formatMessage({ id: 'search_placeholder' })}
+                            />
                         </Search>
                         <Box
                             sx={{
@@ -137,11 +143,13 @@ const Header: FC = () => {
                                 cursor: 'pointer',
                                 alignItems: 'center',
                             }}
-                            onClick={handleClick}>
+                            onClick={handleClick}
+                        >
                             <IconButton
                                 disableRipple
                                 sx={{ width: '32px', height: '32px' }}
-                                color='inherit'>
+                                color='inherit'
+                            >
                                 {userAvatar ? (
                                     <Avatar
                                         src={userAvatar}
@@ -187,7 +195,8 @@ const Header: FC = () => {
                     },
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
                 <Box sx={{ display: 'flex', px: 2, py: 1, alignItems: 'center' }}>
                     {userAvatar ? (
                         <Avatar
@@ -199,11 +208,23 @@ const Header: FC = () => {
                     )}
                     <Typography>
                         {session
-                            ? session?.user?.name || intl.formatMessage({ id: 'unnamed_user' })
+                            ? session.user.name || intl.formatMessage({ id: 'unnamed_user' })
                             : intl.formatMessage({ id: 'not_authorized' })}
                     </Typography>
                 </Box>
                 <Divider />
+                {session && (
+                    <MenuItem
+                        onClick={() => {
+                            push(`/users/${session.user.id}`)
+                        }}
+                    >
+                        <ListItemIcon>
+                            <Person />
+                        </ListItemIcon>
+                        {intl.formatMessage({ id: 'my_profile' })}
+                    </MenuItem>
+                )}
                 <MenuItem
                     onClick={async () => {
                         const newLocale = intl.locale === 'en' ? 'ru' : 'en'
@@ -216,7 +237,8 @@ const Header: FC = () => {
                             })
                         }
                         push({ pathname, query }, asPath, { locale: newLocale })
-                    }}>
+                    }}
+                >
                     <ListItemIcon>
                         <Language />
                     </ListItemIcon>
@@ -227,7 +249,8 @@ const Header: FC = () => {
                         onClick={() => {
                             handleClose()
                             signOut()
-                        }}>
+                        }}
+                    >
                         <ListItemIcon>
                             <Logout />
                         </ListItemIcon>
@@ -238,7 +261,8 @@ const Header: FC = () => {
                         onClick={() => {
                             handleClose()
                             push('/api/auth/signin')
-                        }}>
+                        }}
+                    >
                         <ListItemIcon>
                             <Login />
                         </ListItemIcon>

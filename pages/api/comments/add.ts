@@ -5,7 +5,7 @@ import prisma from '../../../lib/prisma'
 import { authOptions } from '../auth/[...nextauth]'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { titleEn, descriptionEn, titleRu, descriptionRu, groupId } = req.body
+    const { text, reviewId } = req.body
 
     const session: Session | null = await getServerSession(req, res, authOptions)
 
@@ -14,13 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     if (session !== null) {
-        const result = await prisma.piece.create({
+        const result = await prisma.reviewComment.create({
             data: {
-                titleEn,
-                descriptionEn,
-                titleRu,
-                descriptionRu,
-                group: { connect: { id: groupId } },
+                text,
+                review: { connect: { id: reviewId } },
                 author: { connect: { id: session.user.id } },
             },
         })

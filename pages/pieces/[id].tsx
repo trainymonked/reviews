@@ -44,6 +44,7 @@ export async function getServerSideProps({ req, res, params }: ParamsProps) {
                             liked: true,
                         },
                     },
+                    comments: true,
                 },
             },
         },
@@ -59,17 +60,25 @@ export async function getServerSideProps({ req, res, params }: ParamsProps) {
         props: {
             piece: {
                 ...piece,
-                reviews: piece.reviews.map((review) => ({
+                reviews: piece.reviews.map(review => ({
                     ...review,
                     author: {
                         ...review.author,
                         registrationDate: Date.parse(review.author.registrationDate.toJSON()),
-                        reviews: review.author.reviews.map((r) => ({
+                        reviews: review.author.reviews.map(r => ({
                             ...r,
                             creationDate: Date.parse(r.creationDate.toJSON()),
                         })),
+                        reviewComments: review.author.reviewComments.map(rc => ({
+                            ...rc,
+                            creationDate: Date.parse(rc.creationDate.toJSON()),
+                        })),
                     },
                     creationDate: Date.parse(review.creationDate.toJSON()),
+                    comments: review.comments.map(c => ({
+                        ...c,
+                        creationDate: Date.parse(c.creationDate.toJSON()),
+                    })),
                 })),
                 creationDate: Date.parse(piece.creationDate.toJSON()),
             },
@@ -90,7 +99,11 @@ const ReviewPage: FC<Props> = ({ piece, isAuthenticated }) => {
             <Head>
                 <title>{intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn}</title>
             </Head>
-            <Piece piece={piece} fullPage isAuthenticated={isAuthenticated} />
+            <Piece
+                piece={piece}
+                fullPage
+                isAuthenticated={isAuthenticated}
+            />
         </Layout>
     )
 }

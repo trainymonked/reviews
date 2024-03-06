@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useIntl } from 'react-intl'
@@ -78,32 +78,56 @@ const Header: FC = () => {
         setAnchorEl(null)
     }
 
+    const [userAvatar, setUserAvatar] = useState<string | null>(null)
+
+    useEffect(() => {
+        const getStatus = async () => {
+            if (!session?.user?.image) {
+                return setUserAvatar(null)
+            }
+            const res = await fetch(session.user.image || '', {
+                method: 'HEAD',
+            })
+            if (res.status === 404) {
+                return setUserAvatar(null)
+            }
+            return setUserAvatar(session.user.image)
+        }
+        getStatus()
+    }, [session?.user?.image])
+
     return (
         <>
-            <AppBar position='static' color='inherit'>
+            <AppBar
+                position='static'
+                color='inherit'>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.75 }}>
                         <Link href='/'>
                             <Typography color='inherit'>{intl.formatMessage({ id: 'page.reviews.title' })}</Typography>
                         </Link>
                         <Link href='/users'>
-                            <Typography fontSize='small' color='inherit'>
+                            <Typography
+                                fontSize='small'
+                                color='inherit'>
                                 {intl.formatMessage({ id: 'page.users.title' })}
                             </Typography>
                         </Link>
                         <Link href='/pieces'>
-                            <Typography fontSize='small' color='inherit'>
+                            <Typography
+                                fontSize='small'
+                                color='inherit'>
                                 {intl.formatMessage({ id: 'page.pieces.title' })}
                             </Typography>
                         </Link>
                     </Box>
                     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                        {/* <Search>
+                        <Search>
                             <SearchIconWrapper>
                                 <SearchIcon />
                             </SearchIconWrapper>
                             <StyledInputBase placeholder={intl.formatMessage({ id: 'search_placeholder' })} />
-                        </Search> */}
+                        </Search>
                         <Box
                             sx={{
                                 display: 'flex',
@@ -113,11 +137,16 @@ const Header: FC = () => {
                                 cursor: 'pointer',
                                 alignItems: 'center',
                             }}
-                            onClick={handleClick}
-                        >
-                            <IconButton disableRipple sx={{ width: '32px', height: '32px' }} color='inherit'>
-                                {session?.user?.image ? (
-                                    <Avatar src={session.user.image} variant='circular' />
+                            onClick={handleClick}>
+                            <IconButton
+                                disableRipple
+                                sx={{ width: '32px', height: '32px' }}
+                                color='inherit'>
+                                {userAvatar ? (
+                                    <Avatar
+                                        src={userAvatar}
+                                        variant='circular'
+                                    />
                                 ) : (
                                     <AccountCircle sx={{ width: '32px', height: '32px' }} />
                                 )}
@@ -158,10 +187,16 @@ const Header: FC = () => {
                     },
                 }}
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
                 <Box sx={{ display: 'flex', px: 2, py: 1, alignItems: 'center' }}>
-                    {session?.user?.image ? <Avatar src={session.user.image} variant='circular' /> : <AccountCircle />}
+                    {userAvatar ? (
+                        <Avatar
+                            src={userAvatar}
+                            variant='circular'
+                        />
+                    ) : (
+                        <AccountCircle />
+                    )}
                     <Typography>
                         {session
                             ? session?.user?.name || intl.formatMessage({ id: 'unnamed_user' })
@@ -181,8 +216,7 @@ const Header: FC = () => {
                             })
                         }
                         push({ pathname, query }, asPath, { locale: newLocale })
-                    }}
-                >
+                    }}>
                     <ListItemIcon>
                         <Language />
                     </ListItemIcon>
@@ -193,8 +227,7 @@ const Header: FC = () => {
                         onClick={() => {
                             handleClose()
                             signOut()
-                        }}
-                    >
+                        }}>
                         <ListItemIcon>
                             <Logout />
                         </ListItemIcon>
@@ -205,8 +238,7 @@ const Header: FC = () => {
                         onClick={() => {
                             handleClose()
                             push('/api/auth/signin')
-                        }}
-                    >
+                        }}>
                         <ListItemIcon>
                             <Login />
                         </ListItemIcon>

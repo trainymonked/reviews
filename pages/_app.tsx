@@ -39,7 +39,9 @@ const App = ({ Component, pageProps }: AppProps) => {
 
     return (
         <SessionProvider session={pageProps.session}>
-            <IntlProvider locale={userLocale} messages={messages}>
+            <IntlProvider
+                locale={userLocale}
+                messages={messages}>
                 <Component {...pageProps} />
             </IntlProvider>
         </SessionProvider>

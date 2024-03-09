@@ -1,9 +1,12 @@
-import { FC, Key } from 'react'
-import { Box, Button, Typography } from '@mui/material'
+import { FC, Key, SyntheticEvent, useEffect, useState } from 'react'
+import { Box, Button, Rating, Typography } from '@mui/material'
 import { useIntl } from 'react-intl'
 
 import Link from './Link'
 import Review, { IReview } from './Review'
+import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
+import { Star } from '@mui/icons-material'
 
 export interface IPiece {
     id: Key
@@ -27,7 +30,41 @@ type Props = {
 }
 
 const Piece: FC<Props> = ({ piece, fullPage = false, isAuthenticated }) => {
+    const { data: session }: { data: Session | null } = useSession()
     const intl = useIntl()
+
+    const [averageRating, setAverageRating] = useState(
+        piece.ratings.reduce((a, b) => a + +b.stars, 0) / piece.ratings.length
+    )
+    const [yourRating, setYourRating] = useState(0)
+
+    useEffect(() => {
+        setYourRating(+piece.ratings.find(rating => rating.authorId === session?.user.id)?.stars || 0)
+    }, [session?.user.id, piece.ratings])
+
+    const rateHandler = async (event: SyntheticEvent, value: number | null) => {
+        if (session?.user) {
+            const body = { pieceId: piece.id, stars: String(value) }
+            const res = await fetch('/api/pieces/rate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            })
+            const data = await res.json()
+            setYourRating(+data.stars)
+            piece.ratings = piece.ratings.map(rating => {
+                if (rating.authorId === session.user.id) {
+                    return data
+                }
+                return rating
+            })
+
+            if (!piece.ratings.find(rating => rating.id === data.id)) {
+                piece.ratings = piece.ratings.concat(data)
+            }
+            setAverageRating(piece.ratings.reduce((a, b) => a + +b.stars, 0) / piece.ratings.length)
+        }
+    }
 
     if (fullPage) {
         return (
@@ -36,9 +73,31 @@ const Piece: FC<Props> = ({ piece, fullPage = false, isAuthenticated }) => {
                     {intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn} (
                     {intl.locale === 'en' ? piece.group.nameEn : piece.group.nameRu})
                 </Typography>
+
                 <Typography>
                     {intl.locale === 'en' ? piece.descriptionEn : piece.descriptionRu || piece.descriptionEn}
                 </Typography>
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    <Typography>{intl.formatMessage({ id: 'piece_rating' })}:</Typography>
+                    {averageRating > 0 ? (
+                        <>
+                            <Star color='warning' />
+                            {averageRating.toFixed(2)}/5
+                        </>
+                    ) : (
+                        <Typography>{intl.formatMessage({ id: 'not_yet_rated' })}</Typography>
+                    )}
+                </Box>
+                {session?.user.id && (
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                        <Typography>{intl.formatMessage({ id: 'your_piece_rating' })}:</Typography>
+                        <Rating
+                            value={yourRating}
+                            onChange={rateHandler}
+                            max={5}
+                        />
+                    </Box>
+                )}
 
                 <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
                     <Typography
@@ -59,7 +118,6 @@ const Piece: FC<Props> = ({ piece, fullPage = false, isAuthenticated }) => {
                         <Typography>{intl.formatMessage({ id: 'no_reviews_piece' })}</Typography>
                     )}
                 </Box>
-
                 {isAuthenticated && (
                     <Link href={`/reviews/add?pieceId=${piece.id}`}>
                         <Button variant='contained'>{intl.formatMessage({ id: 'add_review' })}</Button>
@@ -93,6 +151,17 @@ const Piece: FC<Props> = ({ piece, fullPage = false, isAuthenticated }) => {
                 {intl.formatMessage({ id: 'piece_group' })}:{' '}
                 {intl.locale === 'en' ? piece.group.nameEn : piece.group.nameRu || piece.group.nameEn}
             </Typography>
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+                <Typography>{intl.formatMessage({ id: 'piece_rating' })}</Typography>:
+                {averageRating > 0 ? (
+                    <>
+                        <Star color='warning' />
+                        {averageRating.toFixed(2)}/5
+                    </>
+                ) : (
+                    <Typography>{intl.formatMessage({ id: 'not_yet_rated' })}</Typography>
+                )}
+            </Box>
 
             <Link href={`/pieces/${piece.id}`}>{intl.formatMessage({ id: 'visit_piece_page' })}</Link>
         </Box>

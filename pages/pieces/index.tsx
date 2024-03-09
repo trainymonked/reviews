@@ -13,7 +13,7 @@ import { authOptions } from '../api/auth/[...nextauth]'
 export async function getServerSideProps({ req, res }: { req: NextApiRequest; res: NextApiResponse }) {
     const session = await getServerSession(req, res, authOptions)
 
-    const pieces = await prisma.piece.findMany({ include: { group: true } })
+    const pieces = await prisma.piece.findMany({ include: { group: true, ratings: true } })
 
     return {
         props: {

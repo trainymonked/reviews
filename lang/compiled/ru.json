@@ -145,6 +145,12 @@
       "value": "Вы не авторизованы"
     }
   ],
+  "not_yet_rated": [
+    {
+      "type": 0,
+      "value": "Нет оценок"
+    }
+  ],
   "page.pieces.title": [
     {
       "type": 0,
@@ -197,6 +203,12 @@
     {
       "type": 0,
       "value": "Тип произведения"
+    }
+  ],
+  "piece_rating": [
+    {
+      "type": 0,
+      "value": "Средняя оценка"
     }
   ],
   "piece_title": [
@@ -299,6 +311,12 @@
     {
       "type": 0,
       "value": "Страница произведения"
+    }
+  ],
+  "your_piece_rating": [
+    {
+      "type": 0,
+      "value": "Ваша оценка"
     }
   ]
 }

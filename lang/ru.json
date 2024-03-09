@@ -49,5 +49,8 @@
     "add_comment": "Добавление комментария",
     "comment_text": "Текст",
     "comment_add": "Добавить",
-    "pages.comments_add.title": "Добавление комментария"
+    "pages.comments_add.title": "Добавление комментария",
+    "piece_rating": "Средняя оценка",
+    "your_piece_rating": "Ваша оценка",
+    "not_yet_rated": "Нет оценок"
 }

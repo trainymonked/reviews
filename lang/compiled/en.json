@@ -149,6 +149,12 @@
       "value": "Not authorized"
     }
   ],
+  "not_yet_rated": [
+    {
+      "type": 0,
+      "value": "Not Yet Rated"
+    }
+  ],
   "page.pieces.title": [
     {
       "type": 0,
@@ -201,6 +207,12 @@
     {
       "type": 0,
       "value": "Group"
+    }
+  ],
+  "piece_rating": [
+    {
+      "type": 0,
+      "value": "Average Rating"
     }
   ],
   "piece_title": [
@@ -303,6 +315,12 @@
     {
       "type": 0,
       "value": "Visit piece page"
+    }
+  ],
+  "your_piece_rating": [
+    {
+      "type": 0,
+      "value": "Your Rating"
     }
   ]
 }

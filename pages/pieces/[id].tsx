@@ -47,6 +47,7 @@ export async function getServerSideProps({ req, res, params }: ParamsProps) {
                     comments: true,
                 },
             },
+            ratings: true,
         },
     })
 
@@ -92,7 +93,7 @@ type Props = {
     isAuthenticated: boolean
 }
 
-const ReviewPage: FC<Props> = ({ piece, isAuthenticated }) => {
+const PiecePage: FC<Props> = ({ piece, isAuthenticated }) => {
     const intl = useIntl()
     return (
         <Layout>
@@ -108,4 +109,4 @@ const ReviewPage: FC<Props> = ({ piece, isAuthenticated }) => {
     )
 }
 
-export default ReviewPage
+export default PiecePage

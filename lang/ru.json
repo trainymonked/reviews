@@ -52,5 +52,9 @@
     "pages.comments_add.title": "Добавление комментария",
     "piece_rating": "Средняя оценка",
     "your_piece_rating": "Ваша оценка",
-    "not_yet_rated": "Нет оценок"
+    "not_yet_rated": "Нет оценок",
+    "edit_review": "Редактировать",
+    "review_save": "Сохранить",
+    "review_edit": "Редактирование обзора",
+    "pages.reviews_edit.title": "Редактирование обзора"
 }

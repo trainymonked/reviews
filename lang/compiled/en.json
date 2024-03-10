@@ -83,6 +83,12 @@
       "value": "Delete review"
     }
   ],
+  "edit_review": [
+    {
+      "type": 0,
+      "value": "Edit"
+    }
+  ],
   "latest_reviews": [
     {
       "type": 0,
@@ -185,6 +191,12 @@
       "value": "Add a Review"
     }
   ],
+  "pages.reviews_edit.title": [
+    {
+      "type": 0,
+      "value": "Review Edit"
+    }
+  ],
   "piece": [
     {
       "type": 0,
@@ -239,10 +251,22 @@
       "value": "Add"
     }
   ],
+  "review_edit": [
+    {
+      "type": 0,
+      "value": "Review Edit"
+    }
+  ],
   "review_rating": [
     {
       "type": 0,
       "value": "Your rating"
+    }
+  ],
+  "review_save": [
+    {
+      "type": 0,
+      "value": "Save"
     }
   ],
   "review_tags": [

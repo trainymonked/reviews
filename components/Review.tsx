@@ -168,7 +168,16 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                 </Box>
 
                 {session?.user.id === review.authorId && (
-                    <Box sx={{ mx: 'auto' }}>
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Button
+                            variant='contained'
+                            color='warning'
+                            onClick={() => {
+                                push(`/reviews/edit?id=${review.id}`)
+                            }}
+                        >
+                            {intl.formatMessage({ id: 'edit_review' })}
+                        </Button>
                         <Button
                             variant='contained'
                             color='error'

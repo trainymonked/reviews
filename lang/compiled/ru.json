@@ -79,6 +79,12 @@
       "value": "Удалить обзор"
     }
   ],
+  "edit_review": [
+    {
+      "type": 0,
+      "value": "Редактировать"
+    }
+  ],
   "latest_reviews": [
     {
       "type": 0,
@@ -181,6 +187,12 @@
       "value": "Добавление обзора"
     }
   ],
+  "pages.reviews_edit.title": [
+    {
+      "type": 0,
+      "value": "Редактирование обзора"
+    }
+  ],
   "piece": [
     {
       "type": 0,
@@ -235,10 +247,22 @@
       "value": "Добавить"
     }
   ],
+  "review_edit": [
+    {
+      "type": 0,
+      "value": "Редактирование обзора"
+    }
+  ],
   "review_rating": [
     {
       "type": 0,
       "value": "Ваша оценка"
+    }
+  ],
+  "review_save": [
+    {
+      "type": 0,
+      "value": "Сохранить"
     }
   ],
   "review_tags": [

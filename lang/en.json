@@ -52,5 +52,9 @@
     "pages.comments_add.title": "Leave a Comment",
     "piece_rating": "Average Rating",
     "your_piece_rating": "Your Rating",
-    "not_yet_rated": "Not Yet Rated"
+    "not_yet_rated": "Not Yet Rated",
+    "edit_review": "Edit",
+    "review_save": "Save",
+    "review_edit": "Review Edit",
+    "pages.reviews_edit.title": "Review Edit"
 }

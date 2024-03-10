@@ -21,6 +21,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { Logout, AccountCircle, KeyboardArrowDown, Language, Login, Person } from '@mui/icons-material'
 
 import Link from './Link'
+import { Session } from 'next-auth'
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -64,7 +65,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }))
 
 const Header: FC = () => {
-    const { data: session } = useSession()
+    const { data: session }: { data: Session | null } = useSession()
 
     const { push, pathname, query, asPath } = useRouter()
     const intl = useIntl()

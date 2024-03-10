@@ -111,7 +111,6 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
             setPieceId(pId)
             const piece = pieces.find(piece => piece.id === pId)
             setPiece(piece ? (intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn) : '')
-            console.log(piece ? (intl.locale === 'en' ? piece.titleEn : piece.titleRu || piece.titleEn) : '')
         }
     }, [searchParams, intl.locale, pieces, pieceId])
 

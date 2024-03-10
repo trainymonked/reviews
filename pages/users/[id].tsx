@@ -2,6 +2,8 @@ import { FC } from 'react'
 import { Avatar, Box, Typography } from '@mui/material'
 import Head from 'next/head'
 import { useIntl } from 'react-intl'
+import { createClient } from '@supabase/supabase-js'
+import { Review as PrismaReview } from '@prisma/client'
 
 import Layout from '../../components/Layout'
 import prisma from '../../lib/prisma'
@@ -48,14 +50,32 @@ export async function getServerSideProps({ params }: ParamsProps) {
         }
     }
 
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
+    const reviewsWithImageUrls = await Promise.all(
+        user.reviews.map(async (review: PrismaReview) => {
+            const { data } = await supabase.storage.from('review_images').createSignedUrls(
+                review.images.map(i => i.match(/[^/]+$/)![0]),
+                1800
+            )
+
+            if (review.images) {
+                return { ...review, images: data?.map(i => i.signedUrl) }
+            }
+
+            return { ...review }
+        })
+    )
+
     return {
         props: {
             user: {
                 ...user,
                 registrationDate: Date.parse(user.registrationDate.toJSON()),
                 emailVerified: user.emailVerified ? Date.parse(user.emailVerified.toJSON()) : null,
-                reviews: user.reviews.map((review: IReview) => ({
+                reviews: reviewsWithImageUrls.map((review: IReview) => ({
                     ...review,
+                    images: review.images || [],
                     author: {
                         ...review.author,
                         registrationDate: Date.parse(review.author.registrationDate.toJSON()),

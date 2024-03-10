@@ -10,7 +10,10 @@ const Layout: FC<Props> = ({ children }) => (
     <>
         <Header />
         <Container sx={{ my: 2 }}>{children}</Container>
-        <style jsx global>{`
+        <style
+            jsx
+            global
+        >{`
             body {
                 margin: 0;
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',

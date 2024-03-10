@@ -104,6 +104,22 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                     <Typography>{review.grade}/10</Typography>
                 </Box>
 
+                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    {review.images.map(image => (
+                        <img
+                            style={{
+                                width: '25vw',
+                                minWidth: '160px',
+                                objectFit: 'contain',
+                                border: '1px solid rgba(0, 0, 0, 0.125)',
+                            }}
+                            key={image}
+                            src={image}
+                            alt={intl.formatMessage({ id: 'alt_user_image' })}
+                        />
+                    ))}
+                </Box>
+
                 <Typography>{review.text}</Typography>
 
                 <Box
@@ -211,13 +227,32 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                     {intl.locale === 'en' ? review.piece.titleEn : review.piece.titleRu || review.piece.titleEn}
                 </Link>
             )}
+
             {!noAuthor && (
                 <Typography>
                     {intl.formatMessage({ id: 'by' })}{' '}
                     <Link href={`/users/${review.authorId}`}>{review.author.name}</Link>
                 </Typography>
             )}
+
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+                {review.images.map(image => (
+                    <img
+                        style={{
+                            width: '15vw',
+                            minWidth: '160px',
+                            objectFit: 'contain',
+                            border: '1px solid rgba(0, 0, 0, 0.125)',
+                        }}
+                        key={image}
+                        src={image}
+                        alt={intl.formatMessage({ id: 'alt_user_image' })}
+                    />
+                ))}
+            </Box>
+
             <Typography>{review.text.slice(0, 130)}...</Typography>
+
             <Link href={`/reviews/${review.id}`}>
                 <Typography>{intl.formatMessage({ id: 'show_full_review' })}</Typography>
             </Link>

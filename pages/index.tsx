@@ -2,6 +2,7 @@ import { FC } from 'react'
 import { NextApiRequest, NextApiResponse } from 'next'
 import Head from 'next/head'
 import { getServerSession } from 'next-auth'
+import { createClient } from '@supabase/supabase-js'
 import { Box, Button, Typography } from '@mui/material'
 import { useIntl } from 'react-intl'
 
@@ -33,10 +34,28 @@ export async function getServerSideProps({ req, res }: { req: NextApiRequest; re
         },
     })
 
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
+    const reviewsWithImageUrls = await Promise.all(
+        reviews.map(async review => {
+            const { data } = await supabase.storage.from('review_images').createSignedUrls(
+                review.images.map(i => i.match(/[^/]+$/)![0]),
+                1800
+            )
+
+            if (review.images) {
+                return { ...review, images: data?.map(i => i.signedUrl) }
+            }
+
+            return { ...review }
+        })
+    )
+
     return {
         props: {
-            reviews: reviews.map(review => ({
+            reviews: reviewsWithImageUrls.map(review => ({
                 ...review,
+                images: review.images || [],
                 author: {
                     ...review.author,
                     registrationDate: Date.parse(review.author.registrationDate.toJSON()),

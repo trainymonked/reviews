@@ -1,4 +1,4 @@
-import { FC, SyntheticEvent, useState, useEffect } from 'react'
+import { FC, SyntheticEvent, useState, useEffect, ChangeEvent } from 'react'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Head from 'next/head'
@@ -17,6 +17,7 @@ import {
     Typography,
 } from '@mui/material'
 import { useIntl } from 'react-intl'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 import { authOptions } from '../api/auth/[...nextauth]'
 import prisma from '../../lib/prisma'
@@ -58,11 +59,14 @@ type Props = {
 const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
     const [title, setTitle] = useState('')
     const [text, setText] = useState('')
-    const [images, setImages] = useState([])
     const [tags, setTags] = useState<string[]>([])
     const [grade, setGrade] = useState(0)
     const [piece, setPiece] = useState('')
     const [pieceId, setPieceId] = useState<string>('')
+
+    const supabase = createClientComponentClient()
+    const [currentFile, setCurrentFile] = useState<{ file: File; name: string } | null>(null)
+    const [images, setImages] = useState<{ id: string; path: string; fullPath: string }[]>([])
 
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isSelectOpen, setIsSelectOpen] = useState(false)
@@ -83,7 +87,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
     const submitData = async (e: SyntheticEvent) => {
         e.preventDefault()
         try {
-            const body = { title, text, grade, images, tags, pieceId }
+            const body = { title, text, grade, images: images.map(i => i.fullPath), tags, pieceId }
             const res = await fetch('/api/reviews/add', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -113,6 +117,26 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
         event.preventDefault()
         setIsSelectOpen(false)
         setIsModalOpen(true)
+    }
+
+    const uploadImage = async () => {
+        const fileName = Date.now() + '-' + currentFile!.name.match(/[^\\]+$/)![0]
+
+        const { data, error } = (await supabase.storage.from('review_images').upload(fileName, currentFile!.file)) as {
+            data: { id: string; path: string; fullPath: string }
+            error: any
+        }
+
+        if (error) {
+            console.error(error)
+            return
+        }
+
+        setCurrentFile(null)
+
+        setImages(images => {
+            return images.concat(data)
+        })
     }
 
     return (
@@ -227,6 +251,43 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                             onChange={(event, value) => setGrade(value || grade)}
                             max={10}
                         />
+                    </Box>
+
+                    <Box sx={{ display: 'inline-flex', gap: 1, alignItems: 'center' }}>
+                        <TextField
+                            type='file'
+                            inputProps={{ accept: 'image/*' }}
+                            size='small'
+                            disabled={images.length > 1}
+                            value={currentFile?.name ?? ''}
+                            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                                if (event.target.files) {
+                                    setCurrentFile({ file: event.target.files[0], name: event.target.value })
+                                } else {
+                                    setCurrentFile(null)
+                                }
+                            }}
+                        />
+                        <Button
+                            variant='outlined'
+                            color='info'
+                            size='medium'
+                            disabled={!(currentFile && images.length < 2)}
+                            onClick={uploadImage}
+                        >
+                            Upload
+                        </Button>
+                    </Box>
+
+                    <Box>
+                        {images.map(image => (
+                            <Typography
+                                sx={{ fontWeight: '700', color: 'forestgreen' }}
+                                key={image.id}
+                            >
+                                {image.path}
+                            </Typography>
+                        ))}
                     </Box>
 
                     <Button

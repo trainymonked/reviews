@@ -16,14 +16,18 @@ const App = ({ Component, pageProps }: AppProps) => {
     useEffect(() => {
         ;(async () => {
             const session: Session | null = await getSession()
+            let preferredLocale = shortLocale
+
             if (session) {
-                const preferredLocale = session.user.preferredLocale || 'en'
-                setUserLocale(preferredLocale)
-                push({ pathname, query }, asPath, { locale: preferredLocale })
-            } else {
-                setUserLocale(shortLocale)
-                push({ pathname, query }, asPath, { locale: shortLocale })
+                preferredLocale = session.user.preferredLocale || 'en'
             }
+
+            if (locale !== preferredLocale) {
+                push({ pathname, query }, asPath, { locale: preferredLocale })
+                return
+            }
+
+            setUserLocale(preferredLocale)
         })()
     }, [locale])
 

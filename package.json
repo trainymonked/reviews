@@ -3,7 +3,7 @@
     "dev": "next dev",
     "build": "npm run i18n && next build",
     "start": "next start",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "vercel-build": "prisma generate && prisma migrate deploy && npm run build",
     "extract:i18n": "formatjs extract '{pages,components}/**/*.{js,ts,tsx}' --format simple --id-interpolation-pattern '[sha512:contenthash:base64:6]' --out-file lang/compiled/en.json",
     "compile:i18n": "formatjs compile-folder --ast --format simple lang lang/compiled",
     "i18n": "npm run extract:i18n && npm run compile:i18n",

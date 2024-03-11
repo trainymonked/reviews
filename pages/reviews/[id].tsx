@@ -73,7 +73,7 @@ export async function getServerSideProps({
         props: {
             review: {
                 ...review,
-                images: data?.map(i => i.signedUrl),
+                images: data?.map(i => i.signedUrl) || [],
                 author: {
                     ...review.author,
                     registrationDate: Date.parse(review.author.registrationDate.toJSON()),

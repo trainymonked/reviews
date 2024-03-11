@@ -1,13 +1,16 @@
-import { FC, SyntheticEvent, useEffect, useState } from 'react'
+import { ChangeEvent, FC, SyntheticEvent, useEffect, useState } from 'react'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Head from 'next/head'
 import { getServerSession } from 'next-auth'
+import { createClient } from '@supabase/supabase-js'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import {
     Autocomplete,
     Box,
     Button,
     FormControl,
+    IconButton,
     InputLabel,
     MenuItem,
     Rating,
@@ -16,6 +19,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material'
+import { Clear } from '@mui/icons-material'
 import { useIntl } from 'react-intl'
 
 import { authOptions } from '../api/auth/[...nextauth]'
@@ -63,10 +67,18 @@ export async function getServerSideProps({
     const pieces = await prisma.piece.findMany()
     const pieceGroups = await prisma.pieceGroup.findMany()
 
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+
+    const { data } = await supabase.storage.from('review_images').createSignedUrls(
+        review.images.map(i => i.match(/[^/]+$/)![0]),
+        1800
+    )
+
     return {
         props: {
             review: {
                 ...review,
+                images: data?.map((img, idx) => ({ ...img, fullPath: review.images[idx] })) || [],
                 creationDate: Date.parse(review.creationDate.toJSON() || ''),
                 piece: {
                     ...review.piece,
@@ -82,8 +94,16 @@ export async function getServerSideProps({
     }
 }
 
+type ImReview = Omit<IReview, 'images'> & {
+    images: {
+        path: string
+        signedUrl: string
+        fullPath: string
+    }[]
+}
+
 type Props = {
-    review: IReview
+    review: ImReview
     pieces: IPiece[]
     pieceGroups: any[]
 }
@@ -104,6 +124,10 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
         intl.locale === 'en' ? review.piece.titleEn : review.piece.titleRu || review.piece.titleEn
     )
 
+    const supabase = createClientComponentClient()
+    const [currentFile, setCurrentFile] = useState<{ file: File; name: string } | null>(null)
+    const [newImages, setNewImages] = useState<{ id: string; path: string; fullPath: string }[]>([])
+
     useEffect(() => {
         const pId = searchParams.get('pieceId') || pieceId || ''
 
@@ -120,7 +144,16 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
     const submitData = async (e: SyntheticEvent) => {
         e.preventDefault()
         try {
-            const body = { title, text, grade, images, tags, pieceId, id: review.id }
+            const body = {
+                title,
+                text,
+                grade,
+                images: images.map(i => i.fullPath).concat(newImages.map(i => i.fullPath)),
+                oldImages: review.images,
+                tags,
+                pieceId,
+                id: review.id,
+            }
             const res = await fetch('/api/reviews/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -150,6 +183,30 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
         event.preventDefault()
         setIsSelectOpen(false)
         setIsModalOpen(true)
+    }
+
+    const removeImage = (path: string) => {
+        setImages(images => images.filter(image => image.path !== path))
+    }
+
+    const uploadImage = async () => {
+        const fileName = Date.now() + '-' + currentFile!.name.match(/[^\\]+$/)![0]
+
+        const { data, error } = (await supabase.storage.from('review_images').upload(fileName, currentFile!.file)) as {
+            data: { id: string; path: string; fullPath: string }
+            error: any
+        }
+
+        if (error) {
+            console.error(error)
+            return
+        }
+
+        setCurrentFile(null)
+
+        setNewImages(images => {
+            return images.concat(data)
+        })
     }
 
     return (
@@ -240,6 +297,80 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
                         }}
                         disableCloseOnSelect
                     />
+
+                    <Box>
+                        {images.map(image => (
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    gap: 0.5,
+                                    alignItems: 'center',
+                                }}
+                                key={image.path}
+                            >
+                                <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                                    <img
+                                        width={'64px'}
+                                        height={'64px'}
+                                        style={{ objectFit: 'contain' }}
+                                        src={image.signedUrl}
+                                        alt={intl.formatMessage({ id: 'alt_user_image' })}
+                                    />
+                                    <Typography>{image.path}</Typography>
+                                </Box>
+                                <IconButton
+                                    size='small'
+                                    onClick={() => removeImage(image.path)}
+                                >
+                                    <Clear />
+                                </IconButton>
+                            </Box>
+                        ))}
+                    </Box>
+
+                    <Box
+                        sx={{
+                            display: newImages.length + images.length < 2 ? 'inline-flex' : 'none',
+                            gap: 1,
+                            alignItems: 'center',
+                        }}
+                    >
+                        <TextField
+                            type='file'
+                            inputProps={{ accept: 'image/*' }}
+                            size='small'
+                            disabled={newImages.length + images.length > 1}
+                            value={currentFile?.name ?? ''}
+                            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                                if (event.target.files) {
+                                    setCurrentFile({ file: event.target.files[0], name: event.target.value })
+                                } else {
+                                    setCurrentFile(null)
+                                }
+                            }}
+                        />
+                        <Button
+                            variant='outlined'
+                            color='info'
+                            size='medium'
+                            disabled={!(currentFile && images.length < 2)}
+                            onClick={uploadImage}
+                        >
+                            Upload
+                        </Button>
+                    </Box>
+
+                    <Box>
+                        {newImages.map(image => (
+                            <Typography
+                                sx={{ fontWeight: '700', color: 'forestgreen' }}
+                                key={image.id}
+                            >
+                                {image.path}
+                            </Typography>
+                        ))}
+                    </Box>
 
                     {/* <Autocomplete
                         renderInput={(params) => <TextField {...params} label={'Piece'} />}

@@ -87,15 +87,19 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
         return (
             <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
                 <Typography variant='h2'>{review.title}</Typography>
-                <Link href={`/pieces/${review.pieceId}`}>
-                    {intl.formatMessage({ id: 'piece' })}:{' '}
-                    {intl.locale === 'en' ? review.piece.titleEn : review.piece.titleRu || review.piece.titleEn}
-                </Link>
-                <Link href={`/users/${review.authorId}`}>
-                    {intl.formatMessage({ id: 'author' })}: {review.author.name}
-                </Link>
+                <Box sx={{ alignSelf: 'flex-start' }}>
+                    <Link href={`/pieces/${review.pieceId}`}>
+                        {intl.formatMessage({ id: 'piece' })}:{' '}
+                        {intl.locale === 'en' ? review.piece.titleEn : review.piece.titleRu || review.piece.titleEn}
+                    </Link>
+                </Box>
+                <Box sx={{ alignSelf: 'flex-start' }}>
+                    <Link href={`/users/${review.authorId}`}>
+                        {intl.formatMessage({ id: 'author' })}: {review.author.name}
+                    </Link>
+                </Box>
 
-                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', alignSelf: 'flex-start' }}>
                     <Rating
                         value={1}
                         max={1}
@@ -104,11 +108,11 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                     <Typography>{review.grade}/10</Typography>
                 </Box>
 
-                <Box sx={{ display: 'flex', gap: 0.5 }}>
+                <Box sx={{ display: 'flex', gap: 0.5, maxHeight: '45vh' }}>
                     {review.images.map(image => (
                         <img
                             style={{
-                                width: '25vw',
+                                maxWidth: '20vw',
                                 minWidth: '160px',
                                 objectFit: 'contain',
                                 border: '1px solid rgba(0, 0, 0, 0.125)',

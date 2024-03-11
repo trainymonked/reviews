@@ -16,10 +16,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
-    const imagesToRemove = oldImages.filter(oldImg => !images.includes(oldImg.fullPath))
+    const imagesToRemove = oldImages.filter((oldImg: any) => !images.includes(oldImg.fullPath))
 
     if (imagesToRemove.length) {
-        await supabase.storage.from('review_images').remove(imagesToRemove.map(i => i.path))
+        await supabase.storage.from('review_images').remove(imagesToRemove.map((i: any) => i.path))
     }
 
     const result = await prisma.review.update({

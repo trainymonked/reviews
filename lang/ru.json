@@ -57,5 +57,6 @@
     "review_save": "Сохранить",
     "review_edit": "Редактирование обзора",
     "pages.reviews_edit.title": "Редактирование обзора",
-    "alt_user_image": "Пользовательское изображение"
+    "alt_user_image": "Пользовательское изображение",
+    "you_can_upload_images_below": "Вы можете загрузить до 2 изображений"
 }

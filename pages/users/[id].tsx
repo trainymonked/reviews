@@ -52,20 +52,17 @@ export async function getServerSideProps({ params }: ParamsProps) {
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
-    const reviewsWithImageUrls = await Promise.all(
-        user.reviews.map(async (review: PrismaReview) => {
-            const { data } = await supabase.storage.from('review_images').createSignedUrls(
-                review.images.map(i => i.match(/[^/]+$/)![0]),
-                1800
-            )
+    const reviewsWithImageUrls = user.reviews.map((review: PrismaReview) => {
+        const imageUrls = review.images.map(
+            i => supabase.storage.from('review_images').getPublicUrl(i.match(/[^/]+$/)![0]).data.publicUrl
+        )
 
-            if (review.images) {
-                return { ...review, images: data?.map(i => i.signedUrl) }
-            }
+        if (review.images) {
+            return { ...review, images: imageUrls }
+        }
 
-            return { ...review }
-        })
-    )
+        return { ...review }
+    })
 
     return {
         props: {

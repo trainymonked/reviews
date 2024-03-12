@@ -8,6 +8,7 @@ import {
     Box,
     Button,
     FormControl,
+    IconButton,
     InputLabel,
     MenuItem,
     Rating,
@@ -16,6 +17,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material'
+import { Clear } from '@mui/icons-material'
 import { useIntl } from 'react-intl'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
@@ -117,6 +119,11 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
         event.preventDefault()
         setIsSelectOpen(false)
         setIsModalOpen(true)
+    }
+
+    const removeServerImage = async (path: string) => {
+        await supabase.storage.from('review_images').remove([path])
+        setImages(images => images.filter(image => image.path !== path))
     }
 
     const uploadImage = async () => {
@@ -241,6 +248,53 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                         }}
                     /> */}
 
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Typography>{intl.formatMessage({ id: 'you_can_upload_images_below' })}</Typography>
+
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, alignItems: 'center' }}>
+                            <TextField
+                                type='file'
+                                inputProps={{ accept: 'image/*' }}
+                                size='small'
+                                disabled={images.length > 1}
+                                value={currentFile?.name ?? ''}
+                                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                                    if (event.target.files) {
+                                        setCurrentFile({ file: event.target.files[0], name: event.target.value })
+                                    } else {
+                                        setCurrentFile(null)
+                                    }
+                                }}
+                            />
+                            <Button
+                                variant='outlined'
+                                color='info'
+                                size='medium'
+                                disabled={!(currentFile && images.length < 2)}
+                                onClick={uploadImage}
+                            >
+                                Upload
+                            </Button>
+                        </Box>
+
+                        {images.map(image => (
+                            <Box
+                                sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                key={image.id}
+                            >
+                                <Typography sx={{ fontWeight: '700', color: 'forestgreen' }}>{image.path}</Typography>
+                                <IconButton
+                                    size='small'
+                                    onClick={() => {
+                                        removeServerImage(image.path)
+                                    }}
+                                >
+                                    <Clear />
+                                </IconButton>
+                            </Box>
+                        ))}
+                    </Box>
+
                     <Box sx={{ mx: 'auto' }}>
                         <Typography sx={{ textAlign: 'center', mb: 1 }}>
                             {intl.formatMessage({ id: 'review_rating' })}
@@ -248,46 +302,9 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                         <Rating
                             sx={{ maxWidth: '60%' }}
                             value={grade}
-                            onChange={(event, value) => setGrade(value || grade)}
+                            onChange={(_, value) => setGrade(value || grade)}
                             max={10}
                         />
-                    </Box>
-
-                    <Box sx={{ display: 'inline-flex', gap: 1, alignItems: 'center' }}>
-                        <TextField
-                            type='file'
-                            inputProps={{ accept: 'image/*' }}
-                            size='small'
-                            disabled={images.length > 1}
-                            value={currentFile?.name ?? ''}
-                            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                                if (event.target.files) {
-                                    setCurrentFile({ file: event.target.files[0], name: event.target.value })
-                                } else {
-                                    setCurrentFile(null)
-                                }
-                            }}
-                        />
-                        <Button
-                            variant='outlined'
-                            color='info'
-                            size='medium'
-                            disabled={!(currentFile && images.length < 2)}
-                            onClick={uploadImage}
-                        >
-                            Upload
-                        </Button>
-                    </Box>
-
-                    <Box>
-                        {images.map(image => (
-                            <Typography
-                                sx={{ fontWeight: '700', color: 'forestgreen' }}
-                                key={image.id}
-                            >
-                                {image.path}
-                            </Typography>
-                        ))}
                     </Box>
 
                     <Button

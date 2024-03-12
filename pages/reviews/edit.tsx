@@ -69,16 +69,17 @@ export async function getServerSideProps({
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
-    const { data } = await supabase.storage.from('review_images').createSignedUrls(
-        review.images.map(i => i.match(/[^/]+$/)![0]),
-        1800
-    )
+    const imagesData = review.images.map(i => ({
+        path: i.match(/[^/]+$/)![0],
+        publicUrl: supabase.storage.from('review_images').getPublicUrl(i.match(/[^/]+$/)![0]).data.publicUrl,
+        fullPath: i,
+    }))
 
     return {
         props: {
             review: {
                 ...review,
-                images: data?.map((img, idx) => ({ ...img, fullPath: review.images[idx] })) || [],
+                images: imagesData,
                 creationDate: Date.parse(review.creationDate.toJSON() || ''),
                 piece: {
                     ...review.piece,
@@ -97,7 +98,7 @@ export async function getServerSideProps({
 type ImReview = Omit<IReview, 'images'> & {
     images: {
         path: string
-        signedUrl: string
+        publicUrl: string
         fullPath: string
     }[]
 }
@@ -189,6 +190,11 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
         setImages(images => images.filter(image => image.path !== path))
     }
 
+    const removeServerImage = async (path: string) => {
+        await supabase.storage.from('review_images').remove([path])
+        setNewImages(images => images.filter(image => image.path !== path))
+    }
+
     const uploadImage = async () => {
         const fileName = Date.now() + '-' + currentFile!.name.match(/[^\\]+$/)![0]
 
@@ -241,6 +247,9 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
                             onOpen={() => setIsSelectOpen(true)}
                             onClose={() => setIsSelectOpen(false)}
                             labelId='piece-select-label'
+                            inputProps={{
+                                id: 'piece-select-label',
+                            }}
                             label={intl.formatMessage({ id: 'piece' })}
                             value={piece}
                             onChange={handlePieceChange}
@@ -298,77 +307,90 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
                         disableCloseOnSelect
                     />
 
-                    <Box>
-                        {images.map(image => (
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    gap: 0.5,
-                                    alignItems: 'center',
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Typography>{intl.formatMessage({ id: 'you_can_upload_images_below' })}</Typography>
+
+                        {!!images.length && (
+                            <Box>
+                                {images.map(image => (
+                                    <Box
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            gap: 0.5,
+                                            alignItems: 'center',
+                                        }}
+                                        key={image.path}
+                                    >
+                                        <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                                            <img
+                                                width={'64px'}
+                                                height={'64px'}
+                                                style={{ objectFit: 'contain' }}
+                                                src={image.publicUrl}
+                                                alt={intl.formatMessage({ id: 'alt_user_image' })}
+                                            />
+                                            <Typography>{image.path}</Typography>
+                                        </Box>
+                                        <IconButton
+                                            size='small'
+                                            onClick={() => removeImage(image.path)}
+                                        >
+                                            <Clear />
+                                        </IconButton>
+                                    </Box>
+                                ))}
+                            </Box>
+                        )}
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                gap: 1,
+                                alignItems: 'center',
+                            }}
+                        >
+                            <TextField
+                                type='file'
+                                inputProps={{ accept: 'image/*' }}
+                                size='small'
+                                disabled={newImages.length + images.length > 1}
+                                value={currentFile?.name ?? ''}
+                                onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                                    if (event.target.files) {
+                                        setCurrentFile({ file: event.target.files[0], name: event.target.value })
+                                    } else {
+                                        setCurrentFile(null)
+                                    }
                                 }}
-                                key={image.path}
+                            />
+                            <Button
+                                variant='outlined'
+                                color='info'
+                                size='medium'
+                                disabled={!(currentFile && images.length < 2)}
+                                onClick={uploadImage}
                             >
-                                <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
-                                    <img
-                                        width={'64px'}
-                                        height={'64px'}
-                                        style={{ objectFit: 'contain' }}
-                                        src={image.signedUrl}
-                                        alt={intl.formatMessage({ id: 'alt_user_image' })}
-                                    />
-                                    <Typography>{image.path}</Typography>
-                                </Box>
+                                Upload
+                            </Button>
+                        </Box>
+
+                        {newImages.map(image => (
+                            <Box
+                                sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                                key={image.id}
+                            >
+                                <Typography sx={{ fontWeight: '700', color: 'forestgreen' }}>{image.path}</Typography>
                                 <IconButton
                                     size='small'
-                                    onClick={() => removeImage(image.path)}
+                                    onClick={() => {
+                                        removeServerImage(image.path)
+                                    }}
                                 >
                                     <Clear />
                                 </IconButton>
                             </Box>
-                        ))}
-                    </Box>
-
-                    <Box
-                        sx={{
-                            display: newImages.length + images.length < 2 ? 'inline-flex' : 'none',
-                            gap: 1,
-                            alignItems: 'center',
-                        }}
-                    >
-                        <TextField
-                            type='file'
-                            inputProps={{ accept: 'image/*' }}
-                            size='small'
-                            disabled={newImages.length + images.length > 1}
-                            value={currentFile?.name ?? ''}
-                            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                                if (event.target.files) {
-                                    setCurrentFile({ file: event.target.files[0], name: event.target.value })
-                                } else {
-                                    setCurrentFile(null)
-                                }
-                            }}
-                        />
-                        <Button
-                            variant='outlined'
-                            color='info'
-                            size='medium'
-                            disabled={!(currentFile && images.length < 2)}
-                            onClick={uploadImage}
-                        >
-                            Upload
-                        </Button>
-                    </Box>
-
-                    <Box>
-                        {newImages.map(image => (
-                            <Typography
-                                sx={{ fontWeight: '700', color: 'forestgreen' }}
-                                key={image.id}
-                            >
-                                {image.path}
-                            </Typography>
                         ))}
                     </Box>
 
@@ -392,7 +414,7 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
                         <Rating
                             sx={{ maxWidth: '60%' }}
                             value={+grade}
-                            onChange={(event, value) => setGrade(String(value) || grade)}
+                            onChange={(_, value) => setGrade(String(value) || grade)}
                             max={10}
                         />
                     </Box>

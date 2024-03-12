@@ -14,6 +14,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { useIntl } from 'react-intl'
 import { Session } from 'next-auth'
+import { useSnackbar } from 'notistack'
 
 type Props = {
     onCancel: () => void
@@ -32,6 +33,7 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
     const [pieceGroupHandle, setPieceGroupHandle] = useState('')
 
     const intl = useIntl()
+    const { enqueueSnackbar } = useSnackbar()
 
     useEffect(() => {
         setTitleEn('')
@@ -63,8 +65,10 @@ const CreatePiece: FC<Props> = ({ shown, onCancel, onCreate, pieceGroups }) => {
                 body: JSON.stringify(newPiece),
             })
             const piece = await res.json()
+            enqueueSnackbar(intl.formatMessage({ id: 'createPiece_success' }), { variant: 'success' })
             onCreate(piece.id)
         } catch (error) {
+            enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
             console.error(error)
         }
     }

@@ -21,6 +21,7 @@ import {
 } from '@mui/material'
 import { Clear } from '@mui/icons-material'
 import { useIntl } from 'react-intl'
+import { useSnackbar } from 'notistack'
 
 import { authOptions } from '../api/auth/[...nextauth]'
 import prisma from '../../lib/prisma'
@@ -114,12 +115,13 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
     const [text, setText] = useState(review.text)
     const [images, setImages] = useState(review.images)
     const [tags, setTags] = useState(review.tags)
-    const [grade, setGrade] = useState(review.grade)
+    const [grade, setGrade] = useState(+review.grade)
     const [pieceId, setPieceId] = useState(review.pieceId)
 
     const { push } = useRouter()
     const searchParams = useSearchParams()
     const intl = useIntl()
+    const { enqueueSnackbar } = useSnackbar()
 
     const [piece, setPiece] = useState(
         intl.locale === 'en' ? review.piece.titleEn : review.piece.titleRu || review.piece.titleEn
@@ -162,8 +164,10 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
             })
             const data = await res.json()
             const reviewId = data.id
+            enqueueSnackbar(intl.formatMessage({ id: 'review_edit_success' }), { variant: 'success' })
             push(`/reviews/${reviewId}`)
         } catch (error) {
+            enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
             console.error(error)
         }
     }
@@ -193,6 +197,7 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
     const removeServerImage = async (path: string) => {
         await supabase.storage.from('review_images').remove([path])
         setNewImages(images => images.filter(image => image.path !== path))
+        enqueueSnackbar(intl.formatMessage({ id: 'review_image_remove_success' }), { variant: 'success' })
     }
 
     const uploadImage = async () => {
@@ -204,15 +209,14 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
         }
 
         if (error) {
+            enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
             console.error(error)
             return
         }
 
+        enqueueSnackbar(intl.formatMessage({ id: 'review_image_upload_success' }), { variant: 'success' })
         setCurrentFile(null)
-
-        setNewImages(images => {
-            return images.concat(data)
-        })
+        setNewImages(images => images.concat(data))
     }
 
     return (
@@ -412,9 +416,9 @@ const Draft: FC<Props> = ({ review, pieces, pieceGroups }) => {
                             {intl.formatMessage({ id: 'review_rating' })}
                         </Typography>
                         <Rating
-                            sx={{ maxWidth: '60%' }}
-                            value={+grade}
-                            onChange={(_, value) => setGrade(String(value) || grade)}
+                            sx={{ maxWidth: '100%' }}
+                            value={grade}
+                            onChange={(_, value) => setGrade(value || grade)}
                             max={10}
                         />
                     </Box>

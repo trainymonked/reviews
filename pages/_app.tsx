@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { SessionProvider, getSession } from 'next-auth/react'
 import { IntlProvider } from 'react-intl'
 import { Session } from 'next-auth'
+import { SnackbarProvider } from 'notistack'
 
 import English from '../lang/compiled/en.json'
 import Russian from '../lang/compiled/ru.json'
@@ -48,7 +49,16 @@ const App = ({ Component, pageProps }: AppProps) => {
                 locale={userLocale}
                 messages={messages}
             >
-                <Component {...pageProps} />
+                <SnackbarProvider
+                    anchorOrigin={{
+                        horizontal: 'center',
+                        vertical: 'bottom',
+                    }}
+                    autoHideDuration={3000}
+                    maxSnack={3}
+                >
+                    <Component {...pageProps} />
+                </SnackbarProvider>
             </IntlProvider>
         </SessionProvider>
     )

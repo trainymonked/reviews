@@ -5,6 +5,7 @@ import Head from 'next/head'
 import { getServerSession } from 'next-auth'
 import { Box, Button, TextField, Typography } from '@mui/material'
 import { useIntl } from 'react-intl'
+import { useSnackbar } from 'notistack'
 
 import { authOptions } from '../api/auth/[...nextauth]'
 import prisma from '../../lib/prisma'
@@ -48,6 +49,7 @@ const Draft: FC<Props> = ({ reviews }) => {
     const { push } = useRouter()
     const searchParams = useSearchParams()
     const intl = useIntl()
+    const { enqueueSnackbar } = useSnackbar()
 
     useEffect(() => {
         const rId = reviewId || searchParams.get('reviewId') || ''
@@ -67,8 +69,10 @@ const Draft: FC<Props> = ({ reviews }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             })
+            enqueueSnackbar(intl.formatMessage({ id: 'comment_add_success' }), { variant: 'success' })
             push(`/reviews/${reviewId}/#comments`)
         } catch (error) {
+            enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
             console.error(error)
         }
     }

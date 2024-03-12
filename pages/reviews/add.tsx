@@ -20,6 +20,7 @@ import {
 import { Clear } from '@mui/icons-material'
 import { useIntl } from 'react-intl'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useSnackbar } from 'notistack'
 
 import { authOptions } from '../api/auth/[...nextauth]'
 import prisma from '../../lib/prisma'
@@ -76,6 +77,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
     const { push } = useRouter()
     const searchParams = useSearchParams()
     const intl = useIntl()
+    const { enqueueSnackbar } = useSnackbar()
 
     useEffect(() => {
         const pId = pieceId || searchParams.get('pieceId') || ''
@@ -97,8 +99,10 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
             })
             const data = await res.json()
             const reviewId = data.id
+            enqueueSnackbar(intl.formatMessage({ id: 'review_add_success' }), { variant: 'success' })
             push(`/reviews/${reviewId}`)
         } catch (error) {
+            enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
             console.error(error)
         }
     }
@@ -124,6 +128,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
     const removeServerImage = async (path: string) => {
         await supabase.storage.from('review_images').remove([path])
         setImages(images => images.filter(image => image.path !== path))
+        enqueueSnackbar(intl.formatMessage({ id: 'review_image_remove_success' }), { variant: 'success' })
     }
 
     const uploadImage = async () => {
@@ -135,15 +140,14 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
         }
 
         if (error) {
+            enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
             console.error(error)
             return
         }
 
+        enqueueSnackbar(intl.formatMessage({ id: 'review_image_upload_success' }), { variant: 'success' })
         setCurrentFile(null)
-
-        setImages(images => {
-            return images.concat(data)
-        })
+        setImages(images => images.concat(data))
     }
 
     return (
@@ -300,7 +304,7 @@ const Draft: FC<Props> = ({ pieces, pieceGroups }) => {
                             {intl.formatMessage({ id: 'review_rating' })}
                         </Typography>
                         <Rating
-                            sx={{ maxWidth: '60%' }}
+                            sx={{ maxWidth: '100%' }}
                             value={grade}
                             onChange={(_, value) => setGrade(value || grade)}
                             max={10}

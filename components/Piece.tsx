@@ -1,12 +1,13 @@
 import { FC, Key, SyntheticEvent, useEffect, useState } from 'react'
-import { Box, Button, Rating, Typography } from '@mui/material'
 import { useIntl } from 'react-intl'
+import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
+import { Box, Button, Rating, Typography } from '@mui/material'
+import { Star } from '@mui/icons-material'
+import { useSnackbar } from 'notistack'
 
 import Link from './Link'
 import Review, { IReview } from './Review'
-import { useSession } from 'next-auth/react'
-import { Session } from 'next-auth'
-import { Star } from '@mui/icons-material'
 
 export interface IPiece {
     id: Key
@@ -32,6 +33,7 @@ type Props = {
 const Piece: FC<Props> = ({ piece, fullPage = false, isAuthenticated }) => {
     const { data: session }: { data: Session | null } = useSession()
     const intl = useIntl()
+    const { enqueueSnackbar } = useSnackbar()
 
     const [averageRating, setAverageRating] = useState(
         piece.ratings.reduce((a, b) => a + +b.stars, 0) / piece.ratings.length
@@ -50,6 +52,9 @@ const Piece: FC<Props> = ({ piece, fullPage = false, isAuthenticated }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             })
+            if (!res.ok) {
+                enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
+            }
             const data = await res.json()
             setYourRating(+data.stars)
             piece.ratings = piece.ratings.map(rating => {

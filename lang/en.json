@@ -58,5 +58,13 @@
     "review_edit": "Review Edit",
     "pages.reviews_edit.title": "Review Edit",
     "alt_user_image": "User Image",
-    "you_can_upload_images_below": "You can upload up to 2 images"
+    "you_can_upload_images_below": "You can upload up to 2 images",
+    "review_add_success": "Review added successfully",
+    "review_image_remove_success": "Image deleted successfully",
+    "review_image_upload_success": "Image uploaded successfully",
+    "createPiece_success": "Piece created successfully",
+    "review_edit_success": "Review edited successfully",
+    "comment_add_success": "Comment added successfully",
+    "review_delete_success": "Review deleted successfully",
+    "error": "An error has occured"
 }

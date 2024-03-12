@@ -19,9 +19,9 @@ import {
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import { Logout, AccountCircle, KeyboardArrowDown, Language, Login, Person } from '@mui/icons-material'
+import { Session } from 'next-auth'
 
 import Link from './Link'
-import { Session } from 'next-auth'
 
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
@@ -82,7 +82,7 @@ const Header: FC = () => {
     const [userAvatar, setUserAvatar] = useState<string | null>(null)
 
     useEffect(() => {
-        const getStatus = async () => {
+        const getAvatarStatus = async () => {
             if (!session?.user.image) {
                 return setUserAvatar(null)
             }
@@ -94,7 +94,7 @@ const Header: FC = () => {
             }
             return setUserAvatar(session.user.image)
         }
-        getStatus()
+        getAvatarStatus()
     }, [session?.user.image])
 
     return (
@@ -172,26 +172,28 @@ const Header: FC = () => {
                 id='account-menu'
                 open={open}
                 onClose={handleClose}
-                PaperProps={{
-                    elevation: 4,
-                    sx: {
-                        overflow: 'visible',
-                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                        mt: 1,
-                        '& .MuiAvatar-root': {
-                            width: 28,
-                            height: 28,
-                            ml: -0.5,
-                            mr: 1.5,
-                        },
-                        '& .MuiSvgIcon-root': {
-                            width: 28,
-                            height: 28,
-                            ml: -0.5,
-                            mr: 1.5,
-                        },
-                        '& .MuiMenuItem-root:not(:last-of-type)': {
-                            my: 1,
+                slotProps={{
+                    paper: {
+                        elevation: 4,
+                        sx: {
+                            overflow: 'visible',
+                            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                            mt: 1,
+                            '& .MuiAvatar-root': {
+                                width: 28,
+                                height: 28,
+                                ml: -0.5,
+                                mr: 1.5,
+                            },
+                            '& .MuiSvgIcon-root': {
+                                width: 28,
+                                height: 28,
+                                ml: -0.5,
+                                mr: 1.5,
+                            },
+                            '& .MuiMenuItem-root:not(:last-of-type)': {
+                                my: 1,
+                            },
                         },
                     },
                 }}

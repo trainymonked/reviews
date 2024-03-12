@@ -5,6 +5,7 @@ import { Session } from 'next-auth'
 import { useIntl } from 'react-intl'
 import { Box, Button, Rating, Typography } from '@mui/material'
 import { Favorite, FavoriteBorder, Comment } from '@mui/icons-material'
+import { useSnackbar } from 'notistack'
 
 import Link from './Link'
 import ReviewComment, { IReviewComment } from './ReviewComment'
@@ -39,6 +40,7 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
 
     const { push } = useRouter()
     const intl = useIntl()
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         setLiked(!!review.likes.find(like => like.liked && like.authorId === session?.user.id))
@@ -54,8 +56,10 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             })
+            enqueueSnackbar(intl.formatMessage({ id: 'review_delete_success' }), { variant: 'success' })
             push('/')
         } catch (error) {
+            enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
             console.error(error)
         }
     }
@@ -68,6 +72,9 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             })
+            if (!res.ok) {
+                enqueueSnackbar(intl.formatMessage({ id: 'error' }), { variant: 'error' })
+            }
             const data = await res.json()
             setLiked(data.liked)
             review.likes = review.likes.map(like => {

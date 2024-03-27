@@ -66,5 +66,6 @@
     "review_edit_success": "Review edited successfully",
     "comment_add_success": "Comment added successfully",
     "review_delete_success": "Review deleted successfully",
-    "error": "An error has occured"
+    "error": "An error has occured",
+    "admin": "Admin"
 }

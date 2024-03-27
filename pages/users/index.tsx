@@ -2,12 +2,17 @@ import { FC } from 'react'
 import { Avatar, Box, Typography } from '@mui/material'
 import Head from 'next/head'
 import { useIntl } from 'react-intl'
+import { NextApiRequest, NextApiResponse } from 'next'
+import { getServerSession } from 'next-auth'
 
 import Layout from '../../components/Layout'
 import prisma from '../../lib/prisma'
 import Link from '../../components/Link'
+import { authOptions } from '../api/auth/[...nextauth]'
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ req, res }: { req: NextApiRequest; res: NextApiResponse }) {
+    const session = await getServerSession(req, res, authOptions)
+
     const users = await prisma.user.findMany({
         include: {
             _count: {
@@ -29,6 +34,7 @@ export async function getServerSideProps() {
                     emailVerified: user.emailVerified ? Date.parse(user.emailVerified.toJSON()) : null,
                 }
             }),
+            isSessionAdmin: !!session?.user.isAdmin,
         },
     }
 }
@@ -39,14 +45,16 @@ type Props = {
         id: string
         image: string
         name: string
+        isAdmin: boolean
         _count: {
             reviews: number
             reviewComments: number
         }
     }[]
+    isSessionAdmin: boolean
 }
 
-const UsersPage: FC<Props> = ({ users }) => {
+const UsersPage: FC<Props> = ({ users, isSessionAdmin }) => {
     const intl = useIntl()
 
     return (
@@ -77,12 +85,27 @@ const UsersPage: FC<Props> = ({ users }) => {
                                     />
                                 </Link>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                    <Link
-                                        underline='hover'
-                                        href={`/users/${user.id}`}
-                                    >
-                                        {user.name || intl.formatMessage({ id: 'unnamed_user' })}
-                                    </Link>
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 0.5 }}>
+                                        {isSessionAdmin && user.isAdmin && (
+                                            <Typography
+                                                sx={{
+                                                    backgroundColor: '#6d3336',
+                                                    color: '#f5f5f5',
+                                                    px: 1,
+                                                    borderRadius: 2,
+                                                }}
+                                            >
+                                                {intl.formatMessage({ id: 'admin' })}
+                                            </Typography>
+                                        )}
+
+                                        <Link
+                                            underline='hover'
+                                            href={`/users/${user.id}`}
+                                        >
+                                            {user.name || intl.formatMessage({ id: 'unnamed_user' })}
+                                        </Link>
+                                    </Box>
                                     <Typography>
                                         {intl.formatMessage({ id: 'member_since' })}{' '}
                                         {new Date(user.registrationDate).toLocaleDateString(intl.locale)}

@@ -40,7 +40,7 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
 
     const { push } = useRouter()
     const intl = useIntl()
-    const { enqueueSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar()
 
     useEffect(() => {
         setLiked(!!review.likes.find(like => like.liked && like.authorId === session?.user.id))
@@ -194,7 +194,7 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                     )}
                 </Box>
 
-                {session?.user.id === review.authorId && (
+                {(session?.user.id === review.authorId || !!session?.user.isAdmin) && (
                     <Box sx={{ display: 'flex', gap: 1 }}>
                         <Button
                             variant='contained'

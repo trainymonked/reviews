@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session: Session | null = await getServerSession(req, res, authOptions)
 
     if (session === null) {
-        return res.status(401).json({ message: '401' })
+        return res.status(401).json({ message: 'Unauthorized' })
     }
 
     const review = await prisma.review.findUnique({
@@ -20,20 +20,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
     })
 
+    if (review?.authorId !== session.user.id && !session.user.isAdmin) {
+        return res.status(400).json({ message: 'Bad request' })
+    }
+
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
     if (review?.images.length) {
         await supabase.storage.from('review_images').remove(review.images.map(i => i.match(/[^/]+$/)![0]))
     }
 
-    if (review?.authorId === session.user.id) {
-        const result = await prisma.review.delete({
-            where: {
-                id: id,
-            },
-        })
-        return res.json(result)
-    }
-
-    return res.status(400).json({ message: 'Bad request' })
+    const result = await prisma.review.delete({
+        where: {
+            id: id,
+        },
+    })
+    return res.json(result)
 }

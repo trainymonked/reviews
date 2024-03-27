@@ -51,11 +51,14 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
 
         try {
             const body = { id: review.id }
-            await fetch('/api/reviews/delete', {
+            const res = await fetch('/api/reviews/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body),
             })
+            if (!res.ok) {
+                throw new Error(res.statusText)
+            }
             enqueueSnackbar(intl.formatMessage({ id: 'review_delete_success' }), { variant: 'success' })
             push('/')
         } catch (error) {
@@ -186,6 +189,7 @@ const Review: FC<Props> = ({ review, fullPage = false, noPiece = false, noAuthor
                             <ReviewComment
                                 key={comment.id}
                                 comment={comment}
+                                canDelete={comment.authorId === session?.user.id || !!session?.user.isAdmin}
                                 noReview
                             />
                         ))

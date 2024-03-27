@@ -5,7 +5,7 @@ import prisma from '../../../lib/prisma'
 import { authOptions } from '../auth/[...nextauth]'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    const { text, reviewId } = req.body
+    const { id } = req.body
 
     const session: Session | null = await getServerSession(req, res, authOptions)
 
@@ -13,12 +13,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(401).json({ message: 'Unauthorized' })
     }
 
-    const result = await prisma.reviewComment.create({
-        data: {
-            text,
-            review: { connect: { id: reviewId } },
-            author: { connect: { id: session.user.id } },
+    const comment = await prisma.reviewComment.findUnique({
+        where: {
+            id: id,
         },
     })
-    return res.json(result)
+
+    if (comment?.authorId === session.user.id || session.user.isAdmin) {
+        const result = await prisma.reviewComment.delete({
+            where: {
+                id: id,
+            },
+        })
+        return res.json(result)
+    }
+
+    return res.status(400).json({ message: 'Bad request' })
 }

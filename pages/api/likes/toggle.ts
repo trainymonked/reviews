@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session: Session | null = await getServerSession(req, res, authOptions)
 
     if (session === null) {
-        res.status(401).json({ message: '401' })
+        res.status(401).json({ message: 'Unauthorized' })
     }
 
     if (session !== null) {

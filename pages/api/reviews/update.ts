@@ -11,7 +11,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const session: Session | null = await getServerSession(req, res, authOptions)
 
     if (session === null) {
-        return res.status(401).json({ message: '401' })
+        return res.status(401).json({ message: 'Unauthorized' })
     }
 
     const review = await prisma.review.findUnique({
